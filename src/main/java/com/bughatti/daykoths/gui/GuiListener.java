@@ -53,11 +53,13 @@ public class GuiListener implements Listener {
             if (title.equals(kothMenu.title())) {
                 e.setCancelled(true);
                 int slot = e.getRawSlot();
+                Player player = (Player) e.getWhoClicked();
+
                 if (slot == KothMenu.TOGGLE_SLOT) {
                     boolean newState = !koth.isRunning();
 
                     if (newState && !koth.hasBothPositions()) {
-                        ((Player) e.getWhoClicked()).sendMessage(msg("koth-no-zone"));
+                        player.sendMessage(msg("koth-no-zone"));
                         return;
                     }
 
@@ -70,9 +72,24 @@ public class GuiListener implements Listener {
                             .replace("%koth%", koth.getName());
                     org.bukkit.Bukkit.broadcastMessage(HexUtil.colorize(raw));
 
-                    new KothMenu(plugin, koth).open((Player) e.getWhoClicked());
+                    new KothMenu(plugin, koth).open(player);
                 } else if (slot == KothMenu.REWARD_SLOT) {
-                    new RewardMenu(plugin, koth).open((Player) e.getWhoClicked());
+                    new RewardMenu(plugin, koth).open(player);
+                } else if (slot == KothMenu.UTILITIES_SLOT) {
+                    koth.setUtilitiesAllowed(!koth.isUtilitiesAllowed());
+                    plugin.getKothManager().save();
+                    player.sendMessage(msg("utilities-set").replace("%koth%", koth.getName()).replace("%value%", String.valueOf(koth.isUtilitiesAllowed())));
+                    new KothMenu(plugin, koth).open(player);
+                } else if (slot == KothMenu.KEEPINVENTORY_SLOT) {
+                    koth.setKeepInventory(!koth.isKeepInventory());
+                    plugin.getKothManager().save();
+                    player.sendMessage(msg("keepinventory-set").replace("%koth%", koth.getName()).replace("%value%", String.valueOf(koth.isKeepInventory())));
+                    new KothMenu(plugin, koth).open(player);
+                } else if (slot == KothMenu.DELETE_SLOT) {
+                    String deletedName = koth.getName();
+                    plugin.getKothManager().delete(deletedName);
+                    player.closeInventory();
+                    player.sendMessage(msg("koth-deleted").replace("%koth%", deletedName));
                 }
                 return;
             }
@@ -100,4 +117,4 @@ public class GuiListener implements Listener {
             }
         }
     }
-    }
+            }
