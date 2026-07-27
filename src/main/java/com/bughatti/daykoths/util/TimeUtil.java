@@ -13,8 +13,14 @@ public class TimeUtil {
         return nowArgentina().getHour();
     }
 
-    // 1 = Domingo ... 7 = Sabado (formato ES)
     public static String currentDayKey() {
-        return nowArgentina().getDayOfWeek().name(); // MONDAY, TUESDAY, etc
+        return nowArgentina().getDayOfWeek().name();
+    }
+
+    public static String formatSeconds(long totalSeconds) {
+        if (totalSeconds < 0) totalSeconds = 0;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 }
