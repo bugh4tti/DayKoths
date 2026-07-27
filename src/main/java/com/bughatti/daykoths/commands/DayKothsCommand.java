@@ -108,6 +108,14 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 plugin.getServer().broadcastMessage(msg("koth-stopped").replace("%koth%", koth.getName()));
                 return true;
             }
+            case "delete": {
+                if (args.length < 2) { sender.sendMessage("Uso: /daykoths delete <koth>"); return true; }
+                if (!plugin.getKothManager().exists(args[1])) { sender.sendMessage(msg("koth-not-found")); return true; }
+                String deletedName = args[1];
+                plugin.getKothManager().delete(deletedName);
+                sender.sendMessage(msg("koth-deleted").replace("%koth%", deletedName));
+                return true;
+            }
             case "wand": {
                 if (!(sender instanceof Player)) return true;
                 Player p = (Player) sender;
@@ -215,7 +223,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
+        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "delete", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
         if (args.length == 1) {
             return base.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
@@ -225,7 +233,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
             plugin.getKothManager().getAll().forEach(k -> opts.add(k.getName()));
             return opts.stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
-        if (args.length == 2 && Arrays.asList("start", "stop", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && Arrays.asList("start", "stop", "delete", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
@@ -248,4 +256,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-            }
+                }
