@@ -3,6 +3,7 @@ version: '1.0.0'
 main: com.bughatti.daykoths.DayKoths
 api-version: '1.20'
 author: Bughatti
+softdepend: [PlaceholderAPI]
 commands:
   daykoths:
     aliases: [dkoths, dk]
