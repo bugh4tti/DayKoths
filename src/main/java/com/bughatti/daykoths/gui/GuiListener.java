@@ -54,8 +54,22 @@ public class GuiListener implements Listener {
                 e.setCancelled(true);
                 int slot = e.getRawSlot();
                 if (slot == KothMenu.TOGGLE_SLOT) {
-                    koth.setRunning(!koth.isRunning());
+                    boolean newState = !koth.isRunning();
+
+                    if (newState && !koth.hasBothPositions()) {
+                        ((Player) e.getWhoClicked()).sendMessage(msg("koth-no-zone"));
+                        return;
+                    }
+
+                    koth.setRunning(newState);
                     plugin.getKothManager().save();
+
+                    String broadcastKey = newState ? "koth-started" : "koth-stopped";
+                    String raw = plugin.getConfig().getString("messages." + broadcastKey, "")
+                            .replace("%prefix%", plugin.getConfig().getString("plugin.prefix", ""))
+                            .replace("%koth%", koth.getName());
+                    org.bukkit.Bukkit.broadcastMessage(HexUtil.colorize(raw));
+
                     new KothMenu(plugin, koth).open((Player) e.getWhoClicked());
                 } else if (slot == KothMenu.REWARD_SLOT) {
                     new RewardMenu(plugin, koth).open((Player) e.getWhoClicked());
@@ -86,4 +100,4 @@ public class GuiListener implements Listener {
             }
         }
     }
-                }
+    }
