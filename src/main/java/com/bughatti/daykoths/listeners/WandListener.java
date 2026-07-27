@@ -18,6 +18,12 @@ public class WandListener implements Listener {
         this.plugin = plugin;
     }
 
+    private String msg(String key) {
+        String raw = plugin.getConfig().getString("messages." + key, "");
+        String prefix = plugin.getConfig().getString("plugin.prefix", "");
+        return HexUtil.colorize(raw.replace("%prefix%", prefix));
+    }
+
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         ItemStack item = e.getItem();
@@ -30,10 +36,10 @@ public class WandListener implements Listener {
 
         if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
             plugin.getSelectionManager().setPos1(player, e.getClickedBlock().getLocation());
-            player.sendMessage(HexUtil.colorize("&aPosicion 1 marcada. Usa /daykoths setpos <koth> para guardarla."));
+            player.sendMessage(msg("wand-pos1"));
         } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             plugin.getSelectionManager().setPos2(player, e.getClickedBlock().getLocation());
-            player.sendMessage(HexUtil.colorize("&aPosicion 2 marcada. Usa /daykoths setpos <koth> para guardarla."));
+            player.sendMessage(msg("wand-pos2"));
         }
     }
-}
+                   }
