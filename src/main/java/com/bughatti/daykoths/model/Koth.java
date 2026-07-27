@@ -11,17 +11,16 @@ public class Koth {
     private Location pos1;
     private Location pos2;
     private CaptureMode mode = CaptureMode.SCORE;
-    private int requiredSeconds = 60; // segundos para ganar en modo TIME, o valor por punto en modo SCORE
+    private int requiredSeconds = 60;
     private int durationMinutes = 30;
     private boolean running = false;
     private boolean keepInventory = false;
     private boolean utilitiesAllowed = true;
     private List<ItemStack> reward = new ArrayList<>();
+    private String rewardCommand = null;
 
-    // schedules.get(dia o ALLDAYS) -> mapa hora(0-23) -> activo true/false
     private final Map<String, Map<Integer, Boolean>> schedules = new HashMap<>();
 
-    // runtime
     private final transient Set<UUID> playersInside = new HashSet<>();
     private final transient Map<UUID, Integer> scoreProgress = new HashMap<>();
     private transient UUID currentCapturer = null;
@@ -60,6 +59,8 @@ public class Koth {
     public void setUtilitiesAllowed(boolean utilitiesAllowed) { this.utilitiesAllowed = utilitiesAllowed; }
     public List<ItemStack> getReward() { return reward; }
     public void setReward(List<ItemStack> reward) { this.reward = reward; }
+    public String getRewardCommand() { return rewardCommand; }
+    public void setRewardCommand(String rewardCommand) { this.rewardCommand = rewardCommand; }
     public Map<String, Map<Integer, Boolean>> getSchedules() { return schedules; }
 
     public boolean hasBothPositions() { return pos1 != null && pos2 != null; }
@@ -87,4 +88,4 @@ public class Koth {
     public int getCurrentCaptureSeconds() { return currentCaptureSeconds; }
     public void setCurrentCaptureSeconds(int currentCaptureSeconds) { this.currentCaptureSeconds = currentCaptureSeconds; }
     public long getStartedAt() { return startedAt; }
-      }
+    }
