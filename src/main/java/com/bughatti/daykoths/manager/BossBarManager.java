@@ -16,9 +16,11 @@ public class BossBarManager {
 
     private final DayKoths plugin;
     private final Map<String, BossBar> bars = new HashMap<>();
+    private final boolean papiEnabled;
 
     public BossBarManager(DayKoths plugin) {
         this.plugin = plugin;
+        this.papiEnabled = plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
 
     public void update(Koth koth, String timeLeft) {
@@ -37,10 +39,9 @@ public class BossBarManager {
             bars.put(koth.getName().toLowerCase(), bar);
         }
 
-        String title = plugin.getConfig().getString("bossbar.title", "&b%koth%")
+        String rawTitle = plugin.getConfig().getString("bossbar.title", "&b%koth%")
                 .replace("%koth%", koth.getName())
                 .replace("%time_left%", timeLeft);
-        bar.setTitle(HexUtil.colorize(title));
 
         double progress = 1.0;
         if (koth.getDurationMinutes() > 0) {
@@ -52,6 +53,14 @@ public class BossBarManager {
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (!bar.getPlayers().contains(p)) bar.addPlayer(p);
+        }
+
+        if (papiEnabled && !bar.getPlayers().isEmpty()) {
+            Player anyPlayer = bar.getPlayers().get(0);
+            String parsed = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(anyPlayer, rawTitle);
+            bar.setTitle(HexUtil.colorize(parsed));
+        } else {
+            bar.setTitle(HexUtil.colorize(rawTitle));
         }
     }
 
