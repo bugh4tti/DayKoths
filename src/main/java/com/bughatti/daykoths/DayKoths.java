@@ -5,6 +5,7 @@ import com.bughatti.daykoths.gui.GuiListener;
 import com.bughatti.daykoths.listeners.KothListener;
 import com.bughatti.daykoths.listeners.WandListener;
 import com.bughatti.daykoths.manager.KothManager;
+import com.bughatti.daykoths.manager.SelectionManager;
 import com.bughatti.daykoths.tasks.CaptureTask;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,6 +13,7 @@ public class DayKoths extends JavaPlugin {
 
     private static DayKoths instance;
     private KothManager kothManager;
+    private SelectionManager selectionManager;
 
     @Override
     public void onEnable() {
@@ -19,6 +21,7 @@ public class DayKoths extends JavaPlugin {
         saveDefaultConfig();
 
         kothManager = new KothManager(this);
+        selectionManager = new SelectionManager();
 
         DayKothsCommand command = new DayKothsCommand(this);
         getCommand("daykoths").setExecutor(command);
@@ -40,4 +43,5 @@ public class DayKoths extends JavaPlugin {
 
     public static DayKoths getInstance() { return instance; }
     public KothManager getKothManager() { return kothManager; }
-  }
+    public SelectionManager getSelectionManager() { return selectionManager; }
+}
