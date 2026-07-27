@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RewardMenu {
@@ -19,8 +20,11 @@ public class RewardMenu {
     private final Koth koth;
 
     public static final int[] REWARD_SLOTS = {
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34
+            19, 20, 21, 22, 23, 24, 25
+    };
+
+    public static final int[] COMMAND_SLOTS = {
+            37, 38, 39, 40, 41, 42, 43
     };
 
     public RewardMenu(DayKoths plugin, Koth koth) {
@@ -50,6 +54,18 @@ public class RewardMenu {
             idx++;
         }
 
+        int cmdIdx = 0;
+        for (String cmd : koth.getCommandRewards()) {
+            if (cmdIdx >= COMMAND_SLOTS.length) break;
+            ItemStack paper = new ItemStack(Material.PAPER);
+            ItemMeta meta = paper.getItemMeta();
+            meta.setDisplayName(HexUtil.colorize("&eComando #" + (cmdIdx + 1)));
+            meta.setLore(Collections.singletonList(HexUtil.colorize("&7" + cmd)));
+            paper.setItemMeta(meta);
+            inv.setItem(COMMAND_SLOTS[cmdIdx], paper);
+            cmdIdx++;
+        }
+
         player.openInventory(inv);
     }
 
@@ -74,4 +90,4 @@ public class RewardMenu {
     }
 
     public Koth getKoth() { return koth; }
-}
+             }
