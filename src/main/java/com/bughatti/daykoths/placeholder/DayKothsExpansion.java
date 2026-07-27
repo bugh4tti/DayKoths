@@ -35,6 +35,37 @@ public class DayKothsExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, String params) {
+        if (params.startsWith("score_")) {
+            String rest = params.substring("score_".length());
+            for (Koth koth : plugin.getKothManager().getAll()) {
+                String prefix = koth.getName() + "_top_";
+                if (!rest.startsWith(prefix)) continue;
+                String tail = rest.substring(prefix.length());
+                String[] parts = tail.split("_");
+                if (parts.length < 2) continue;
+
+                int index;
+                try { index = Integer.parseInt(parts[0]); } catch (NumberFormatException e) { continue; }
+                String field = parts[1];
+
+                List<Map.Entry<UUID, Integer>> top = koth.getScoreProgress().entrySet().stream()
+                        .sorted((a, b) -> b.getValue() - a.getValue())
+                        .collect(Collectors.toList());
+
+                if (top.size() < index) {
+                    return field.equals("name") ? "---" : "0";
+                }
+                Map.Entry<UUID, Integer> entry = top.get(index - 1);
+                if (field.equals("name")) {
+                    OfflinePlayer op = Bukkit.getOfflinePlayer(entry.getKey());
+                    return op.getName() == null ? "---" : op.getName();
+                } else if (field.equals("value")) {
+                    return String.valueOf(entry.getValue());
+                }
+            }
+            return "";
+        }
+
         for (Koth koth : plugin.getKothManager().getAll()) {
             String prefix = koth.getName() + "_";
             if (!params.startsWith(prefix)) continue;
@@ -70,4 +101,4 @@ public class DayKothsExpansion extends PlaceholderExpansion {
         }
         return "";
     }
-                }
+            }
