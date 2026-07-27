@@ -102,6 +102,21 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 p.sendMessage(msg("wand-given"));
                 return true;
             }
+            case "setpos": {
+                if (args.length < 2 || !(sender instanceof Player)) return true;
+                Player p = (Player) sender;
+                Koth koth = plugin.getKothManager().get(args[1]);
+                if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
+                if (!plugin.getSelectionManager().hasBoth(p)) {
+                    sender.sendMessage(HexUtil.colorize("&cMarcá primero las 2 posiciones con /daykoths wand."));
+                    return true;
+                }
+                koth.setPos1(plugin.getSelectionManager().getPos1(p));
+                koth.setPos2(plugin.getSelectionManager().getPos2(p));
+                plugin.getKothManager().save();
+                sender.sendMessage(HexUtil.colorize("&aZona del koth &e" + koth.getName() + " &aguardada correctamente."));
+                return true;
+            }
             case "schedules": {
                 if (args.length < 4) { sender.sendMessage("Uso: /daykoths schedules <koth> <dia|alldays> <hora> <true|false>"); return true; }
                 Koth koth = plugin.getKothManager().get(args[1]);
@@ -168,11 +183,11 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "wand", "schedules", "utilities", "keepinventory", "duration", "rw");
+        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
         if (args.length == 1) {
             return base.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
-        if (args.length == 2 && Arrays.asList("start", "stop", "schedules", "utilities", "keepinventory", "duration", "rw").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && Arrays.asList("start", "stop", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
@@ -188,4 +203,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-            }
+                    }
