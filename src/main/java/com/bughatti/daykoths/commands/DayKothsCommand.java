@@ -7,6 +7,7 @@ import com.bughatti.daykoths.gui.RewardMenu;
 import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
+import com.bughatti.daykoths.util.TitleUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -116,6 +117,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 koth.setRunning(true);
                 plugin.getKothManager().save();
                 plugin.getServer().broadcastMessage(msg("koth-started").replace("%koth%", koth.getName()));
+                TitleUtil.sendStartTitle(plugin, koth);
                 return true;
             }
             case "stop": {
@@ -302,4 +304,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-                                                  }
+                                             }
