@@ -1,11 +1,11 @@
 plugin:
-  prefix: "&bKoth &8» &f"
+  prefix: "&#00DAFF&lD&#14DEFF&lA&#28E2FF&lY&#3CE6FF&lK&#50E9FF&lO&#64EDFF&lT&#78F1FF&lH&#78F1FGS &8● &f"
   version: "1.0.0"
   author: "Bughatti"
 
 messages:
   no-permission: "%prefix%&cNo tienes permisos para usar este comando."
-  capturing-interval-seconds: 5
+  capturing-interval-seconds: 10
   capturing: "%prefix%¡El jugador &e%player% &festá capturando el Koth &e%koth%&f! &7(Tiempo restante: &e%time_left%&7)"
   koth-created: "%prefix%&aEl koth &e%koth% &afue creado correctamente."
   koth-not-found: "%prefix%&cEse koth no existe."
@@ -47,6 +47,10 @@ titles:
   enter-subtitle: "&x&0&0&D&A&F&F¡Estas capturando el Koth! 🏹"
   leave-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
   leave-subtitle: "&x&0&0&D&A&F&F¡Dejaste de capturar el Koth! 🏹"
+  start-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
+  start-subtitle: "&x&0&0&D&A&F&F¡El Koth %koth% comenzó! 🏹"
+  win-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
+  win-subtitle: "&x&0&0&D&A&F&F¡Felicidades %player%, ganaste el Koth %koth%! 🏹"
   fade-in: 10
   stay: 40
   fade-out: 10
