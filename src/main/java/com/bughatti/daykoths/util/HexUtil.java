@@ -1,7 +1,5 @@
 package com.bughatti.daykoths.util;
 
-import org.bukkit.ChatColor;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +15,7 @@ public class HexUtil {
         StringBuilder sb = new StringBuilder();
         while (legacy.find()) {
             String hex = legacy.group().replace("&x", "").replace("&", "");
-            legacy.appendReplacement(sb, ChatColor.of("#" + hex).toString());
+            legacy.appendReplacement(sb, net.md_5.bungee.api.ChatColor.of("#" + hex).toString());
         }
         legacy.appendTail(sb);
         message = sb.toString();
@@ -25,11 +23,11 @@ public class HexUtil {
         Matcher hex = HEX_PATTERN.matcher(message);
         sb = new StringBuilder();
         while (hex.find()) {
-            hex.appendReplacement(sb, ChatColor.of("#" + hex.group(1)).toString());
+            hex.appendReplacement(sb, net.md_5.bungee.api.ChatColor.of("#" + hex.group(1)).toString());
         }
         hex.appendTail(sb);
         message = sb.toString();
 
-        return ChatColor.translateAlternateColorCodes('&', message);
+        return org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
     }
-              }
+}
