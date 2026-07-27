@@ -2,6 +2,7 @@ package com.bughatti.daykoths.gui;
 
 import com.bughatti.daykoths.DayKoths;
 import com.bughatti.daykoths.model.Koth;
+import com.bughatti.daykoths.util.HexUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,12 +19,26 @@ public class GuiListener implements Listener {
         this.plugin = plugin;
     }
 
+    private String msg(String key) {
+        String raw = plugin.getConfig().getString("messages." + key, "");
+        String prefix = plugin.getConfig().getString("plugin.prefix", "");
+        return HexUtil.colorize(raw.replace("%prefix%", prefix));
+    }
+
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         String title = e.getView().getTitle();
+        MainMenu mainMenu = new MainMenu(plugin);
 
-        if (title.equals(MainMenu.TITLE)) {
+        if (title.equals(mainMenu.title())) {
             e.setCancelled(true);
+            int slot = e.getRawSlot();
+
+            if (slot == MainMenu.CREATE_SLOT) {
+                ((Player) e.getWhoClicked()).sendMessage(msg("gui-create-hint"));
+                return;
+            }
+
             ItemStack item = e.getCurrentItem();
             if (item == null || item.getType() == Material.GRAY_STAINED_GLASS_PANE) return;
             if (item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) return;
@@ -34,21 +49,26 @@ public class GuiListener implements Listener {
         }
 
         for (Koth koth : plugin.getKothManager().getAll()) {
-            if (title.equals(new KothMenu(plugin, koth).title())) {
+            KothMenu kothMenu = new KothMenu(plugin, koth);
+            if (title.equals(kothMenu.title())) {
                 e.setCancelled(true);
                 int slot = e.getRawSlot();
-                if (slot == 11) {
+                if (slot == KothMenu.TOGGLE_SLOT) {
                     koth.setRunning(!koth.isRunning());
                     plugin.getKothManager().save();
                     new KothMenu(plugin, koth).open((Player) e.getWhoClicked());
-                } else if (slot == 15) {
+                } else if (slot == KothMenu.REWARD_SLOT) {
                     new RewardMenu(plugin, koth).open((Player) e.getWhoClicked());
                 }
                 return;
             }
-            if (title.equals(new RewardMenu(plugin, koth).title())) {
+            RewardMenu rewardMenu = new RewardMenu(plugin, koth);
+            if (title.equals(rewardMenu.title())) {
                 int slot = e.getRawSlot();
-                boolean isRewardSlot = slot >= 10 && slot <= 15;
+                boolean isRewardSlot = false;
+                for (int s : RewardMenu.REWARD_SLOTS) {
+                    if (s == slot) { isRewardSlot = true; break; }
+                }
                 if (!isRewardSlot) e.setCancelled(true);
                 return;
             }
@@ -59,10 +79,11 @@ public class GuiListener implements Listener {
     public void onClose(InventoryCloseEvent e) {
         String title = e.getView().getTitle();
         for (Koth koth : plugin.getKothManager().getAll()) {
-            if (title.equals(new RewardMenu(plugin, koth).title())) {
-                new RewardMenu(plugin, koth).saveFromInventory(e.getInventory());
+            RewardMenu rewardMenu = new RewardMenu(plugin, koth);
+            if (title.equals(rewardMenu.title())) {
+                rewardMenu.saveFromInventory(e.getInventory());
                 return;
             }
         }
     }
-}
+                }
