@@ -124,5 +124,9 @@ public class CaptureTask extends BukkitRunnable {
         for (org.bukkit.inventory.ItemStack item : koth.getReward()) {
             winner.getInventory().addItem(item.clone());
         }
+        for (String cmd : koth.getCommandRewards()) {
+            String finalCmd = cmd.replace("%player%", winner.getName());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
+        }
     }
-          }
+                    }
