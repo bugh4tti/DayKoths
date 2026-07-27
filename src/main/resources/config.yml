@@ -6,7 +6,7 @@ plugin:
 messages:
   no-permission: "%prefix%&cNo tienes permisos para usar este comando."
   capturing-interval-seconds: 5
-  capturing: "%prefix%¡El jugador &e%player% &festá capturando el Koth &e%koth%&f!"
+  capturing: "%prefix%¡El jugador &e%player% &festá capturando el Koth &e%koth%&f! &7(Tiempo restante: &e%time_left%&7)"
   koth-created: "%prefix%&aEl koth &e%koth% &afue creado correctamente."
   koth-not-found: "%prefix%&cEse koth no existe."
   koth-deleted: "%prefix%&aEl koth &e%koth% &afue eliminado correctamente."
@@ -23,6 +23,9 @@ messages:
   keepinventory-set: "%prefix%&akeepInventory del koth &e%koth% &aen &e%value%&a."
   duration-set: "%prefix%&aDuración del koth &e%koth% &aestablecida en &e%minutes% &aminutos."
   duration-invalid: "%prefix%&cNumero invalido."
+  duration-usage: "%prefix%&cUso: /daykoths duration <koth> <minutos>"
+  delete-usage: "%prefix%&cUso: /daykoths delete <koth>"
+  schedules-usage: "%prefix%&cUso: /daykoths schedules <koth> <dia|alldays> <hora> <true|false>"
   utilities-blocked: "%prefix%&cNo podés usar lana ni telas dentro de este koth."
   reload-success: "%prefix%&aConfiguracion recargada."
   create-usage: "%prefix%&cUso: /daykoths create <koth> <puntaje|tiempo> <valor>"
@@ -42,6 +45,23 @@ titles:
   fade-in: 10
   stay: 40
   fade-out: 10
+
+bossbar:
+  enabled: false
+  title: "&b%koth% &7» &fTiempo restante: &e%time_left%"
+  color: BLUE
+  style: SOLID
+
+scoreboard:
+  enabled: false
+  title: "&b&lDAYKOTHS"
+  lines:
+    - "&7Koth: &f%koth%"
+    - "&7Tiempo: &f%time_left%"
+    - " "
+    - "&e1. &f%top_player_1_name% &7- &f%top_player_1_amount%"
+    - "&72. &f%top_player_2_name% &7- &f%top_player_2_amount%"
+    - "&c3. &f%top_player_3_name% &7- &f%top_player_3_amount%"
 
 gui:
   main-title: "&8DayKoths &7» &fMenu Principal"
