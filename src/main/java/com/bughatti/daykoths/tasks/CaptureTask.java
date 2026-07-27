@@ -5,6 +5,7 @@ import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
 import com.bughatti.daykoths.util.TimeUtil;
+import com.bughatti.daykoths.util.TitleUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,7 +42,7 @@ public class CaptureTask extends BukkitRunnable {
 
     private void tick() {
         tickCounter++;
-        int interval = Math.max(1, plugin.getConfig().getInt("messages.capturing-interval-seconds", 5));
+        int interval = Math.max(1, plugin.getConfig().getInt("messages.capturing-interval-seconds", 10));
         String prefix = plugin.getConfig().getString("plugin.prefix", "");
         String capturingMsgRaw = plugin.getConfig().getString("messages.capturing", "");
 
@@ -127,6 +128,7 @@ public class CaptureTask extends BukkitRunnable {
                 .replace("%player%", winner.getName())
                 .replace("%koth%", koth.getName()));
         Bukkit.broadcastMessage(msg);
+        TitleUtil.sendWinTitle(plugin, winner, koth);
         giveReward(koth, winner);
         plugin.getKothManager().save();
     }
@@ -145,6 +147,7 @@ public class CaptureTask extends BukkitRunnable {
                         .replace("%player%", winner.getName())
                         .replace("%koth%", koth.getName()));
                 Bukkit.broadcastMessage(msg);
+                TitleUtil.sendWinTitle(plugin, winner, koth);
                 giveReward(koth, winner);
             }
         } else {
@@ -164,4 +167,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-}
+            }
