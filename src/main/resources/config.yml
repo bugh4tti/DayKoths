@@ -12,13 +12,26 @@ messages:
   koth-started: "%prefix%&a¡El koth &e%koth% &aha comenzado!"
   koth-stopped: "%prefix%&c¡El koth &e%koth% &cha finalizado!"
   koth-won: "%prefix%&a¡&e%player% &aha ganado el koth &e%koth%&a!"
+  koth-no-zone: "%prefix%&cEse koth no tiene zona marcada. Usa /daykoths wand y /daykoths setpos primero."
   wand-given: "%prefix%&aRecibiste la wand de selección. Click izquierdo = zona 1, click derecho = zona 2."
-  pos1-set: "%prefix%&aPosición 1 marcada."
-  pos2-set: "%prefix%&aPosición 2 marcada."
+  wand-pos1: "%prefix%&aPosicion 1 marcada. Usa /daykoths setpos <koth> para guardarla."
+  wand-pos2: "%prefix%&aPosicion 2 marcada. Usa /daykoths setpos <koth> para guardarla."
+  zone-not-set: "%prefix%&cMarca primero las 2 posiciones con /daykoths wand."
+  zone-saved: "%prefix%&aZona del koth &e%koth% &aguardada correctamente."
   utilities-set: "%prefix%&aUtilities del koth &e%koth% &aen &e%value%&a."
   keepinventory-set: "%prefix%&akeepInventory del koth &e%koth% &aen &e%value%&a."
   duration-set: "%prefix%&aDuración del koth &e%koth% &aestablecida en &e%minutes% &aminutos."
+  duration-invalid: "%prefix%&cNumero invalido."
   utilities-blocked: "%prefix%&cNo podés usar lana ni telas dentro de este koth."
+  reload-success: "%prefix%&aConfiguracion recargada."
+  create-usage: "%prefix%&cUso: /daykoths create <koth> <puntaje|tiempo> <valor>"
+  create-mode-invalid: "%prefix%&cEl modo debe ser &epuntaje &co&etiempo&c."
+  create-value-invalid: "%prefix%&cEl valor tiene que ser un numero (segundos)."
+  schedule-updated: "%prefix%&aSchedule actualizado: &e%day% %hour%h &a-> &e%value%"
+  schedule-hour-invalid: "%prefix%&cHora invalida."
+  rw-command-usage: "%prefix%&cUso: /daykoths rw create <koth> <comando>"
+  rw-command-added: "%prefix%&aComando de recompensa agregado al koth &e%koth%&a."
+  gui-create-hint: "%prefix%&bUsa &f/daykoths create <koth> <puntaje|tiempo> <valor> &bpara crear un koth."
 
 titles:
   enter-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
@@ -28,6 +41,13 @@ titles:
   fade-in: 10
   stay: 40
   fade-out: 10
+
+gui:
+  main-title: "&8DayKoths &7» &fMenu Principal"
+  koth-menu-title: "&8Koth &7» &b%koth%"
+  reward-menu-title: "&8Recompensa &7» &6%koth%"
+  create-item-name: "&aCrear Koth"
+  create-item-lore: "&7Click para ver como crear un koth"
 
 schedule:
   timezone: "America/Argentina/Buenos_Aires"
