@@ -20,6 +20,9 @@ public class KothMenu {
     public static final int TOGGLE_SLOT = 20;
     public static final int INFO_SLOT = 22;
     public static final int REWARD_SLOT = 24;
+    public static final int UTILITIES_SLOT = 29;
+    public static final int KEEPINVENTORY_SLOT = 31;
+    public static final int DELETE_SLOT = 33;
 
     public KothMenu(DayKoths plugin, Koth koth) {
         this.plugin = plugin;
@@ -44,6 +47,9 @@ public class KothMenu {
         inv.setItem(TOGGLE_SLOT, toggleItem());
         inv.setItem(INFO_SLOT, infoItem());
         inv.setItem(REWARD_SLOT, rewardItem());
+        inv.setItem(UTILITIES_SLOT, utilitiesItem());
+        inv.setItem(KEEPINVENTORY_SLOT, keepInventoryItem());
+        inv.setItem(DELETE_SLOT, deleteItem());
 
         player.openInventory(inv);
     }
@@ -83,6 +89,33 @@ public class KothMenu {
         return item;
     }
 
+    private ItemStack utilitiesItem() {
+        ItemStack item = new ItemStack(koth.isUtilitiesAllowed() ? Material.LIME_DYE : Material.GRAY_DYE);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(HexUtil.colorize("&eUtilities: " + (koth.isUtilitiesAllowed() ? "&aActivado" : "&cDesactivado")));
+        meta.setLore(Arrays.asList(HexUtil.colorize("&7Click para activar/desactivar lana y telas")));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack keepInventoryItem() {
+        ItemStack item = new ItemStack(koth.isKeepInventory() ? Material.LIME_DYE : Material.GRAY_DYE);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(HexUtil.colorize("&ekeepInventory: " + (koth.isKeepInventory() ? "&aActivado" : "&cDesactivado")));
+        meta.setLore(Arrays.asList(HexUtil.colorize("&7Click para activar/desactivar")));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack deleteItem() {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(HexUtil.colorize("&cEliminar Koth"));
+        meta.setLore(Arrays.asList(HexUtil.colorize("&7Click para borrar este koth")));
+        item.setItemMeta(meta);
+        return item;
+    }
+
     private ItemStack pane() {
         ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = item.getItemMeta();
@@ -92,4 +125,4 @@ public class KothMenu {
     }
 
     public Koth getKoth() { return koth; }
-                                 }
+                        }
