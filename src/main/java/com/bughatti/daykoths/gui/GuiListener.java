@@ -3,6 +3,7 @@ package com.bughatti.daykoths.gui;
 import com.bughatti.daykoths.DayKoths;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
+import com.bughatti.daykoths.util.TitleUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -72,6 +73,10 @@ public class GuiListener implements Listener {
                             .replace("%koth%", koth.getName());
                     org.bukkit.Bukkit.broadcastMessage(HexUtil.colorize(raw));
 
+                    if (newState) {
+                        TitleUtil.sendStartTitle(plugin, koth);
+                    }
+
                     new KothMenu(plugin, koth).open(player);
                 } else if (slot == KothMenu.REWARD_SLOT) {
                     new RewardMenu(plugin, koth).open(player);
@@ -117,4 +122,4 @@ public class GuiListener implements Listener {
             }
         }
     }
-            }
+                        }
