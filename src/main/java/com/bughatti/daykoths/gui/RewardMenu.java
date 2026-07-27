@@ -10,10 +10,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RewardMenu {
 
     private final DayKoths plugin;
     private final Koth koth;
+
+    public static final int[] REWARD_SLOTS = {
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
+    };
 
     public RewardMenu(DayKoths plugin, Koth koth) {
         this.plugin = plugin;
@@ -21,29 +29,33 @@ public class RewardMenu {
     }
 
     public String title() {
-        return HexUtil.colorize("&8Recompensa &7» &6" + koth.getName());
+        String raw = plugin.getConfig().getString("gui.reward-menu-title", "&8Recompensa &7» &6%koth%");
+        return HexUtil.colorize(raw.replace("%koth%", koth.getName()));
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, title());
+        Inventory inv = Bukkit.createInventory(null, 54, title());
         ItemStack pane = pane();
-        for (int i = 0; i < 27; i++) {
-            if (i < 9 || i > 17 || i % 9 == 0 || i % 9 == 8) inv.setItem(i, pane);
+        for (int i = 0; i < 9; i++) inv.setItem(i, pane);
+        for (int i = 45; i < 54; i++) inv.setItem(i, pane);
+        for (int row = 1; row < 5; row++) {
+            inv.setItem(row * 9, pane);
+            inv.setItem(row * 9 + 8, pane);
         }
 
-        int slot = 10;
+        int idx = 0;
         for (ItemStack item : koth.getReward()) {
-            if (slot > 15) break;
-            inv.setItem(slot, item);
-            slot++;
+            if (idx >= REWARD_SLOTS.length) break;
+            inv.setItem(REWARD_SLOTS[idx], item);
+            idx++;
         }
 
         player.openInventory(inv);
     }
 
     public void saveFromInventory(Inventory inv) {
-        java.util.List<ItemStack> reward = new java.util.ArrayList<>();
-        for (int slot = 10; slot <= 15; slot++) {
+        List<ItemStack> reward = new ArrayList<>();
+        for (int slot : REWARD_SLOTS) {
             ItemStack item = inv.getItem(slot);
             if (item != null && item.getType() != Material.GRAY_STAINED_GLASS_PANE && item.getType() != Material.AIR) {
                 reward.add(item);
