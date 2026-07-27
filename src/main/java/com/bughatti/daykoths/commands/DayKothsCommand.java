@@ -135,6 +135,30 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 reply(sender, msg("koth-deleted").replace("%koth%", deletedName));
                 return true;
             }
+            case "capturetime": {
+                if (args.length < 3) { reply(sender, msg("capturetime-usage")); return true; }
+                Koth koth = plugin.getKothManager().get(args[1]);
+                if (koth == null) { reply(sender, msg("koth-not-found")); return true; }
+                try {
+                    int minutes = Integer.parseInt(args[2]);
+                    koth.setRequiredSeconds(minutes * 60);
+                    plugin.getKothManager().save();
+                    reply(sender, msg("capturetime-set").replace("%koth%", koth.getName()).replace("%minutes%", String.valueOf(minutes)));
+                } catch (NumberFormatException e) {
+                    reply(sender, msg("capturetime-invalid"));
+                }
+                return true;
+            }
+            case "score": {
+                if (args.length < 3) { reply(sender, msg("score-usage")); return true; }
+                Koth koth = plugin.getKothManager().get(args[1]);
+                if (koth == null) { reply(sender, msg("koth-not-found")); return true; }
+                boolean value = Boolean.parseBoolean(args[2]);
+                koth.setMode(value ? CaptureMode.SCORE : CaptureMode.TIME);
+                plugin.getKothManager().save();
+                reply(sender, msg("score-set").replace("%koth%", koth.getName()).replace("%value%", String.valueOf(value)));
+                return true;
+            }
             case "wand": {
                 if (!(sender instanceof Player)) return true;
                 Player p = (Player) sender;
@@ -242,7 +266,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "delete", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
+        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "delete", "capturetime", "score", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
         if (args.length == 1) {
             return base.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
@@ -252,7 +276,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
             plugin.getKothManager().getAll().forEach(k -> opts.add(k.getName()));
             return opts.stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
-        if (args.length == 2 && Arrays.asList("start", "stop", "delete", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && Arrays.asList("start", "stop", "delete", "capturetime", "score", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
@@ -269,10 +293,13 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 4 && args[0].equalsIgnoreCase("schedules")) {
             return Arrays.asList("00","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23");
         }
+        if (args.length == 3 && args[0].equalsIgnoreCase("score")) {
+            return Arrays.asList("true", "false");
+        }
         if ((args.length == 3 && (args[0].equalsIgnoreCase("utilities") || args[0].equalsIgnoreCase("keepinventory")))
                 || (args.length == 5 && args[0].equalsIgnoreCase("schedules"))) {
             return Arrays.asList("true", "false");
         }
         return Collections.emptyList();
     }
-    }
+                                                  }
