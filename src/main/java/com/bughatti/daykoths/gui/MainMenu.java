@@ -11,18 +11,23 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class MainMenu {
 
     private final DayKoths plugin;
-    public static final String TITLE = HexUtil.colorize("&8DayKoths &7» &fMenu Principal");
+    public static final int CREATE_SLOT = 4;
 
     public MainMenu(DayKoths plugin) {
         this.plugin = plugin;
     }
 
+    public String title() {
+        return HexUtil.colorize(plugin.getConfig().getString("gui.main-title", "&8DayKoths"));
+    }
+
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
+        Inventory inv = Bukkit.createInventory(null, 54, title());
         ItemStack pane = pane();
         for (int i = 0; i < 9; i++) inv.setItem(i, pane);
         for (int i = 45; i < 54; i++) inv.setItem(i, pane);
@@ -30,6 +35,13 @@ public class MainMenu {
             inv.setItem(row * 9, pane);
             inv.setItem(row * 9 + 8, pane);
         }
+
+        ItemStack createItem = new ItemStack(Material.NETHER_STAR);
+        ItemMeta createMeta = createItem.getItemMeta();
+        createMeta.setDisplayName(HexUtil.colorize(plugin.getConfig().getString("gui.create-item-name", "&aCrear Koth")));
+        createMeta.setLore(Collections.singletonList(HexUtil.colorize(plugin.getConfig().getString("gui.create-item-lore", "&7Click aqui"))));
+        createItem.setItemMeta(createMeta);
+        inv.setItem(CREATE_SLOT, createItem);
 
         int slot = 10;
         for (Koth koth : plugin.getKothManager().getAll()) {
@@ -44,7 +56,7 @@ public class MainMenu {
             ));
             item.setItemMeta(meta);
             inv.setItem(slot, item);
-            slot = (slot % 8 == 7) ? slot + 3 : slot + 1;
+            slot = (slot % 9 == 7) ? slot + 3 : slot + 1;
         }
 
         player.openInventory(inv);
@@ -57,4 +69,4 @@ public class MainMenu {
         item.setItemMeta(meta);
         return item;
     }
-              }
+            }
