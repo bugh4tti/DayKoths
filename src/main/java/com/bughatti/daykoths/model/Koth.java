@@ -17,7 +17,7 @@ public class Koth {
     private boolean keepInventory = false;
     private boolean utilitiesAllowed = true;
     private List<ItemStack> reward = new ArrayList<>();
-    private String rewardCommand = null;
+    private List<String> commandRewards = new ArrayList<>();
 
     private final Map<String, Map<Integer, Boolean>> schedules = new HashMap<>();
 
@@ -59,8 +59,8 @@ public class Koth {
     public void setUtilitiesAllowed(boolean utilitiesAllowed) { this.utilitiesAllowed = utilitiesAllowed; }
     public List<ItemStack> getReward() { return reward; }
     public void setReward(List<ItemStack> reward) { this.reward = reward; }
-    public String getRewardCommand() { return rewardCommand; }
-    public void setRewardCommand(String rewardCommand) { this.rewardCommand = rewardCommand; }
+    public List<String> getCommandRewards() { return commandRewards; }
+    public void setCommandRewards(List<String> commandRewards) { this.commandRewards = commandRewards; }
     public Map<String, Map<Integer, Boolean>> getSchedules() { return schedules; }
 
     public boolean hasBothPositions() { return pos1 != null && pos2 != null; }
