@@ -31,8 +31,17 @@ public class CaptureTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        try {
+            tick();
+        } catch (Exception ex) {
+            plugin.getLogger().warning("Error en CaptureTask (no se detiene el plugin): " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void tick() {
         tickCounter++;
-        int interval = plugin.getConfig().getInt("messages.capturing-interval-seconds", 5);
+        int interval = Math.max(1, plugin.getConfig().getInt("messages.capturing-interval-seconds", 5));
         String prefix = plugin.getConfig().getString("plugin.prefix", "");
         String capturingMsgRaw = plugin.getConfig().getString("messages.capturing", "");
 
@@ -155,4 +164,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-                                }
+}
