@@ -9,6 +9,7 @@ messages:
   capturing: "%prefix%¡El jugador &e%player% &festá capturando el Koth &e%koth%&f!"
   koth-created: "%prefix%&aEl koth &e%koth% &afue creado correctamente."
   koth-not-found: "%prefix%&cEse koth no existe."
+  koth-deleted: "%prefix%&aEl koth &e%koth% &afue eliminado correctamente."
   koth-started: "%prefix%&a¡El koth &e%koth% &aha comenzado!"
   koth-stopped: "%prefix%&c¡El koth &e%koth% &cha finalizado!"
   koth-won: "%prefix%&a¡&e%player% &aha ganado el koth &e%koth%&a!"
