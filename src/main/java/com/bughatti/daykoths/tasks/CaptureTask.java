@@ -4,6 +4,7 @@ import com.bughatti.daykoths.DayKoths;
 import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
+import com.bughatti.daykoths.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,12 +22,19 @@ public class CaptureTask extends BukkitRunnable {
         this.plugin = plugin;
     }
 
+    private String timeLeft(Koth koth) {
+        if (koth.getDurationMinutes() <= 0) return "--:--";
+        long elapsedSec = (System.currentTimeMillis() - koth.getStartedAt()) / 1000L;
+        long totalSec = koth.getDurationMinutes() * 60L;
+        return TimeUtil.formatSeconds(totalSec - elapsedSec);
+    }
+
     @Override
     public void run() {
         tickCounter++;
         int interval = plugin.getConfig().getInt("messages.capturing-interval-seconds", 5);
         String prefix = plugin.getConfig().getString("plugin.prefix", "");
-        String capturingMsg = HexUtil.colorize(plugin.getConfig().getString("messages.capturing", "").replace("%prefix%", prefix));
+        String capturingMsgRaw = plugin.getConfig().getString("messages.capturing", "");
 
         String enterTitle = HexUtil.colorize(plugin.getConfig().getString("titles.enter-title", ""));
         String enterSubtitle = HexUtil.colorize(plugin.getConfig().getString("titles.enter-subtitle", ""));
@@ -36,8 +44,15 @@ public class CaptureTask extends BukkitRunnable {
         int stay = plugin.getConfig().getInt("titles.stay", 40);
         int fadeOut = plugin.getConfig().getInt("titles.fade-out", 10);
 
+        boolean anyRunning = false;
+
         for (Koth koth : plugin.getKothManager().getAll()) {
             if (!koth.isRunning() || !koth.hasBothPositions()) continue;
+            anyRunning = true;
+
+            String timeLeftStr = timeLeft(koth);
+            plugin.getBossBarManager().update(koth, timeLeftStr);
+            plugin.getScoreboardManager().update(koth, timeLeftStr);
 
             long elapsedMin = (System.currentTimeMillis() - koth.getStartedAt()) / 60000L;
             if (koth.getDurationMinutes() > 0 && elapsedMin >= koth.getDurationMinutes()) {
@@ -58,7 +73,12 @@ public class CaptureTask extends BukkitRunnable {
                     }
 
                     if (tickCounter % interval == 0) {
-                        Bukkit.broadcastMessage(capturingMsg.replace("%player%", player.getName()).replace("%koth%", koth.getName()));
+                        String finalMsg = HexUtil.colorize(capturingMsgRaw
+                                .replace("%prefix%", prefix)
+                                .replace("%player%", player.getName())
+                                .replace("%koth%", koth.getName())
+                                .replace("%time_left%", timeLeftStr));
+                        Bukkit.broadcastMessage(finalMsg);
                     }
 
                     if (koth.getMode() == CaptureMode.SCORE) {
@@ -84,10 +104,15 @@ public class CaptureTask extends BukkitRunnable {
             koth.getPlayersInside().clear();
             koth.getPlayersInside().addAll(currentlyInside);
         }
+
+        if (!anyRunning) {
+            plugin.getScoreboardManager().clearAll();
+        }
     }
 
     private void finishByCapture(Koth koth, Player winner) {
         koth.setRunning(false);
+        plugin.getBossBarManager().remove(koth);
         String msg = HexUtil.colorize(plugin.getConfig().getString("messages.koth-won", "")
                 .replace("%prefix%", plugin.getConfig().getString("plugin.prefix", ""))
                 .replace("%player%", winner.getName())
@@ -99,6 +124,7 @@ public class CaptureTask extends BukkitRunnable {
 
     private void finishByDuration(Koth koth) {
         koth.setRunning(false);
+        plugin.getBossBarManager().remove(koth);
         if (koth.getMode() == CaptureMode.SCORE && !koth.getScoreProgress().isEmpty()) {
             UUID winnerId = koth.getScoreProgress().entrySet().stream()
                     .max((a, b) -> a.getValue() - b.getValue())
@@ -129,4 +155,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-                    }
+                                }
