@@ -109,7 +109,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             case "delete": {
-                if (args.length < 2) { sender.sendMessage("Uso: /daykoths delete <koth>"); return true; }
+                if (args.length < 2) { sender.sendMessage(msg("delete-usage")); return true; }
                 if (!plugin.getKothManager().exists(args[1])) { sender.sendMessage(msg("koth-not-found")); return true; }
                 String deletedName = args[1];
                 plugin.getKothManager().delete(deletedName);
@@ -144,7 +144,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             case "schedules": {
-                if (args.length < 4) { sender.sendMessage("Uso: /daykoths schedules <koth> <dia|alldays> <hora> <true|false>"); return true; }
+                if (args.length < 4) { sender.sendMessage(msg("schedules-usage")); return true; }
                 Koth koth = plugin.getKothManager().get(args[1]);
                 if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
                 String dayKey = args[2].equalsIgnoreCase("alldays") ? "ALLDAYS" : args[2].toUpperCase();
@@ -177,7 +177,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             case "duration": {
-                if (args.length < 3) { sender.sendMessage("Uso: /daykoths duration <koth> <minutos>"); return true; }
+                if (args.length < 3) { sender.sendMessage(msg("duration-usage")); return true; }
                 Koth koth = plugin.getKothManager().get(args[1]);
                 if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
                 try {
@@ -256,4 +256,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-                }
+            }
