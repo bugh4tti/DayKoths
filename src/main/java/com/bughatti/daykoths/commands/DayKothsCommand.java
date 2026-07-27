@@ -58,19 +58,19 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
             case "reload": {
                 plugin.reloadConfig();
                 plugin.getKothManager().load();
-                sender.sendMessage(HexUtil.colorize("&aConfiguracion recargada."));
+                sender.sendMessage(msg("reload-success"));
                 return true;
             }
             case "create": {
                 if (args.length < 4) {
-                    sender.sendMessage(HexUtil.colorize("&cUso: /daykoths create <koth> <puntaje|tiempo> <valor>"));
+                    sender.sendMessage(msg("create-usage"));
                     return true;
                 }
                 String name = args[1];
                 String modeArg = args[2].toLowerCase();
 
                 if (!modeArg.equals("puntaje") && !modeArg.equals("tiempo")) {
-                    sender.sendMessage(HexUtil.colorize("&cEl modo debe ser &epuntaje &co&etiempo&c."));
+                    sender.sendMessage(msg("create-mode-invalid"));
                     return true;
                 }
 
@@ -78,7 +78,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 try {
                     value = Integer.parseInt(args[3]);
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(HexUtil.colorize("&cEl valor tiene que ser un numero (segundos)."));
+                    sender.sendMessage(msg("create-value-invalid"));
                     return true;
                 }
 
@@ -93,6 +93,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 if (args.length < 2) return true;
                 Koth koth = plugin.getKothManager().get(args[1]);
                 if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
+                if (!koth.hasBothPositions()) { sender.sendMessage(msg("koth-no-zone")); return true; }
                 koth.setRunning(true);
                 plugin.getKothManager().save();
                 plugin.getServer().broadcastMessage(msg("koth-started").replace("%koth%", koth.getName()));
@@ -125,13 +126,13 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 Koth koth = plugin.getKothManager().get(args[1]);
                 if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
                 if (!plugin.getSelectionManager().hasBoth(p)) {
-                    sender.sendMessage(HexUtil.colorize("&cMarcá primero las 2 posiciones con /daykoths wand."));
+                    sender.sendMessage(msg("zone-not-set"));
                     return true;
                 }
                 koth.setPos1(plugin.getSelectionManager().getPos1(p));
                 koth.setPos2(plugin.getSelectionManager().getPos2(p));
                 plugin.getKothManager().save();
-                sender.sendMessage(HexUtil.colorize("&aZona del koth &e" + koth.getName() + " &aguardada correctamente."));
+                sender.sendMessage(msg("zone-saved").replace("%koth%", koth.getName()));
                 return true;
             }
             case "schedules": {
@@ -140,11 +141,11 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
                 String dayKey = args[2].equalsIgnoreCase("alldays") ? "ALLDAYS" : args[2].toUpperCase();
                 int hour;
-                try { hour = Integer.parseInt(args[3].replace("pm", "").replace("PM", "")); } catch (NumberFormatException e) { sender.sendMessage("Hora invalida."); return true; }
+                try { hour = Integer.parseInt(args[3].replace("pm", "").replace("PM", "")); } catch (NumberFormatException e) { sender.sendMessage(msg("schedule-hour-invalid")); return true; }
                 boolean active = args.length > 4 && Boolean.parseBoolean(args[4]);
                 koth.getSchedules().computeIfAbsent(dayKey, k -> new HashMap<>()).put(hour, active);
                 plugin.getKothManager().save();
-                sender.sendMessage(HexUtil.colorize("&aSchedule actualizado: " + dayKey + " " + hour + "h -> " + active));
+                sender.sendMessage(msg("schedule-updated").replace("%day%", dayKey).replace("%hour%", String.valueOf(hour)).replace("%value%", String.valueOf(active)));
                 return true;
             }
             case "utilities": {
@@ -177,11 +178,25 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                     plugin.getKothManager().save();
                     sender.sendMessage(msg("duration-set").replace("%koth%", koth.getName()).replace("%minutes%", String.valueOf(minutes)));
                 } catch (NumberFormatException e) {
-                    sender.sendMessage("Numero invalido.");
+                    sender.sendMessage(msg("duration-invalid"));
                 }
                 return true;
             }
             case "rw": {
+                if (args.length >= 2 && args[1].equalsIgnoreCase("create")) {
+                    if (args.length < 4) { sender.sendMessage(msg("rw-command-usage")); return true; }
+                    Koth koth = plugin.getKothManager().get(args[2]);
+                    if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
+                    StringBuilder cmdBuilder = new StringBuilder();
+                    for (int i = 3; i < args.length; i++) {
+                        if (i > 3) cmdBuilder.append(" ");
+                        cmdBuilder.append(args[i]);
+                    }
+                    koth.getCommandRewards().add(cmdBuilder.toString());
+                    plugin.getKothManager().save();
+                    sender.sendMessage(msg("rw-command-added").replace("%koth%", koth.getName()));
+                    return true;
+                }
                 if (args.length < 2 || !(sender instanceof Player)) return true;
                 Koth koth = plugin.getKothManager().get(args[1]);
                 if (koth == null) { sender.sendMessage(msg("koth-not-found")); return true; }
@@ -204,9 +219,19 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             return base.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
-        if (args.length == 2 && Arrays.asList("start", "stop", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && args[0].equalsIgnoreCase("rw")) {
+            List<String> opts = new ArrayList<>();
+            opts.add("create");
+            plugin.getKothManager().getAll().forEach(k -> opts.add(k.getName()));
+            return opts.stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
+        }
+        if (args.length == 2 && Arrays.asList("start", "stop", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("rw") && args[1].equalsIgnoreCase("create")) {
+            return plugin.getKothManager().getAll().stream().map(Koth::getName)
+                    .filter(n -> n.toLowerCase().startsWith(args[2].toLowerCase())).collect(Collectors.toList());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
             return Arrays.asList("puntaje", "tiempo");
@@ -223,4 +248,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-                    }
+            }
