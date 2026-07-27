@@ -38,6 +38,15 @@ public class KothManager {
         return koths.containsKey(name.toLowerCase());
     }
 
+    public boolean delete(String name) {
+        boolean existed = koths.remove(name.toLowerCase()) != null;
+        if (existed) {
+            plugin.getConfig().set("koths." + name, null);
+            plugin.saveConfig();
+        }
+        return existed;
+    }
+
     public Collection<Koth> getAll() {
         return koths.values();
     }
@@ -126,4 +135,4 @@ public class KothManager {
         if (world == null) return null;
         return new Location(world, sec.getDouble("x"), sec.getDouble("y"), sec.getDouble("z"));
     }
-        }
+                     }
