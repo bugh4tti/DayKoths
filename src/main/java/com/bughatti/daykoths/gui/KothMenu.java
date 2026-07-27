@@ -17,30 +17,47 @@ public class KothMenu {
     private final DayKoths plugin;
     private final Koth koth;
 
+    public static final int TOGGLE_SLOT = 20;
+    public static final int INFO_SLOT = 22;
+    public static final int REWARD_SLOT = 24;
+
     public KothMenu(DayKoths plugin, Koth koth) {
         this.plugin = plugin;
         this.koth = koth;
     }
 
     public String title() {
-        return HexUtil.colorize("&8Koth &7» &b" + koth.getName());
+        String raw = plugin.getConfig().getString("gui.koth-menu-title", "&8Koth &7» &b%koth%");
+        return HexUtil.colorize(raw.replace("%koth%", koth.getName()));
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, title());
+        Inventory inv = Bukkit.createInventory(null, 54, title());
         ItemStack pane = pane();
         for (int i = 0; i < 9; i++) inv.setItem(i, pane);
-        for (int i = 18; i < 27; i++) inv.setItem(i, pane);
-        inv.setItem(9, pane); inv.setItem(17, pane);
+        for (int i = 45; i < 54; i++) inv.setItem(i, pane);
+        for (int row = 1; row < 5; row++) {
+            inv.setItem(row * 9, pane);
+            inv.setItem(row * 9 + 8, pane);
+        }
 
-        inv.setItem(11, toggleItem(koth.isRunning(), "&aIniciar / Detener Koth"));
-        inv.setItem(13, infoItem());
-        inv.setItem(15, new ItemStack(Material.CHEST));
-        ItemMeta rewardMeta = inv.getItem(15).getItemMeta();
-        rewardMeta.setDisplayName(HexUtil.colorize("&6Recompensa (rw)"));
-        inv.getItem(15).setItemMeta(rewardMeta);
+        inv.setItem(TOGGLE_SLOT, toggleItem());
+        inv.setItem(INFO_SLOT, infoItem());
+        inv.setItem(REWARD_SLOT, rewardItem());
 
         player.openInventory(inv);
+    }
+
+    private ItemStack rewardItem() {
+        ItemStack item = new ItemStack(Material.CHEST);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(HexUtil.colorize("&6Recompensa (rw)"));
+        meta.setLore(Arrays.asList(
+                HexUtil.colorize("&7Items: &f" + koth.getReward().size()),
+                HexUtil.colorize("&7Comandos: &f" + koth.getCommandRewards().size())
+        ));
+        item.setItemMeta(meta);
+        return item;
     }
 
     private ItemStack infoItem() {
@@ -58,10 +75,10 @@ public class KothMenu {
         return item;
     }
 
-    private ItemStack toggleItem(boolean state, String name) {
-        ItemStack item = new ItemStack(state ? Material.LIME_DYE : Material.GRAY_DYE);
+    private ItemStack toggleItem() {
+        ItemStack item = new ItemStack(koth.isRunning() ? Material.LIME_DYE : Material.GRAY_DYE);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(HexUtil.colorize(name));
+        meta.setDisplayName(HexUtil.colorize("&aIniciar / Detener Koth"));
         item.setItemMeta(meta);
         return item;
     }
@@ -75,4 +92,4 @@ public class KothMenu {
     }
 
     public Koth getKoth() { return koth; }
-          }
+                                 }
