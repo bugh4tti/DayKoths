@@ -4,6 +4,7 @@ import com.bughatti.daykoths.DayKoths;
 import com.bughatti.daykoths.gui.KothMenu;
 import com.bughatti.daykoths.gui.MainMenu;
 import com.bughatti.daykoths.gui.RewardMenu;
+import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
 import org.bukkit.Material;
@@ -61,13 +62,29 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             case "create": {
-                if (args.length < 3) { sender.sendMessage("Uso: /daykoths create <koth> <puntaje|tiempo>"); return true; }
+                if (args.length < 4) {
+                    sender.sendMessage(HexUtil.colorize("&cUso: /daykoths create <koth> <puntaje|tiempo> <valor>"));
+                    return true;
+                }
                 String name = args[1];
-                Koth koth = plugin.getKothManager().create(name);
+                String modeArg = args[2].toLowerCase();
+
+                if (!modeArg.equals("puntaje") && !modeArg.equals("tiempo")) {
+                    sender.sendMessage(HexUtil.colorize("&cEl modo debe ser &epuntaje &co&etiempo&c."));
+                    return true;
+                }
+
+                int value;
                 try {
-                    int value = Integer.parseInt(args[2]);
-                    koth.setRequiredSeconds(value);
-                } catch (NumberFormatException ignored) {}
+                    value = Integer.parseInt(args[3]);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(HexUtil.colorize("&cEl valor tiene que ser un numero (segundos)."));
+                    return true;
+                }
+
+                Koth koth = plugin.getKothManager().create(name);
+                koth.setMode(modeArg.equals("tiempo") ? CaptureMode.TIME : CaptureMode.SCORE);
+                koth.setRequiredSeconds(value);
                 plugin.getKothManager().save();
                 sender.sendMessage(msg("koth-created").replace("%koth%", name));
                 return true;
@@ -190,6 +207,9 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 2 && Arrays.asList("start", "stop", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
+            return Arrays.asList("puntaje", "tiempo");
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("schedules")) {
             return Arrays.asList("alldays", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday");
