@@ -66,7 +66,15 @@ public class KothManager {
             koth.setDurationMinutes(sec.getInt("duration-minutes", 30));
             koth.setKeepInventory(sec.getBoolean("keep-inventory", false));
             koth.setUtilitiesAllowed(sec.getBoolean("utilities-allowed", true));
+            koth.setArsenalEnabled(sec.getBoolean("arsenal-enabled", false));
             koth.setCommandRewards(new ArrayList<>(sec.getStringList("command-rewards")));
+
+            ConfigurationSection ovSec = sec.getConfigurationSection("arsenal-overrides");
+            if (ovSec != null) {
+                for (String id : ovSec.getKeys(false)) {
+                    koth.getArsenalOverrides().put(id, ovSec.getBoolean(id));
+                }
+            }
 
             if (sec.contains("pos1")) koth.setPos1(deserializeLocation(sec.getConfigurationSection("pos1")));
             if (sec.contains("pos2")) koth.setPos2(deserializeLocation(sec.getConfigurationSection("pos2")));
@@ -106,9 +114,14 @@ public class KothManager {
             plugin.getConfig().set(path + ".duration-minutes", koth.getDurationMinutes());
             plugin.getConfig().set(path + ".keep-inventory", koth.isKeepInventory());
             plugin.getConfig().set(path + ".utilities-allowed", koth.isUtilitiesAllowed());
+            plugin.getConfig().set(path + ".arsenal-enabled", koth.isArsenalEnabled());
             plugin.getConfig().set(path + ".reward", koth.getReward());
             plugin.getConfig().set(path + ".command-rewards", koth.getCommandRewards());
             plugin.getConfig().set(path + ".running", koth.isRunning());
+
+            for (Map.Entry<String, Boolean> ov : koth.getArsenalOverrides().entrySet()) {
+                plugin.getConfig().set(path + ".arsenal-overrides." + ov.getKey(), ov.getValue());
+            }
 
             if (koth.getPos1() != null) serializeLocation(path + ".pos1", koth.getPos1());
             if (koth.getPos2() != null) serializeLocation(path + ".pos2", koth.getPos2());
@@ -135,4 +148,4 @@ public class KothManager {
         if (world == null) return null;
         return new Location(world, sec.getDouble("x"), sec.getDouble("y"), sec.getDouble("z"));
     }
-                     }
+                }
