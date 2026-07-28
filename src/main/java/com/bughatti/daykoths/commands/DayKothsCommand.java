@@ -9,9 +9,12 @@ import com.bughatti.daykoths.gui.TopsMenu;
 import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
+import com.bughatti.daykoths.util.ScheduleUtil;
 import com.bughatti.daykoths.util.TitleUtil;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -63,6 +66,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 HexUtil.colorize("&7---------------------------------"),
                 HexUtil.colorize("&e/dk &7- Abre el menu principal"),
                 HexUtil.colorize("&e/dk <koth> &7- Abre el menu de ese koth"),
+                HexUtil.colorize("&e/dk <koth> info &7- Info rapida del koth en el chat"),
                 HexUtil.colorize("&e/dk create <koth> <puntaje|tiempo> <valor> &7- Crea un koth"),
                 HexUtil.colorize("&e/dk start|stop <koth> &7- Inicia o detiene un koth"),
                 HexUtil.colorize("&e/dk delete <koth> &7- Elimina un koth"),
@@ -80,6 +84,40 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 HexUtil.colorize("&e/dk tops &7- Top 5 jugadores con mas koths ganados"),
                 HexUtil.colorize("&e/dk reload &7- Recarga la configuracion"),
                 HexUtil.colorize("&7---------------------------------"),
+        };
+        sender.sendMessage(lines);
+    }
+
+    private void sendKothInfo(CommandSender sender, Koth koth) {
+        String state = koth.isRunning() ? "&aActivo" : "&cInactivo";
+        String mode = koth.getMode().name().equals("SCORE") ? "Puntaje" : "Tiempo";
+
+        Map.Entry<UUID, Integer> topWinner = plugin.getStatsManager().topWinnerForKoth(koth.getName());
+        String winnerLine;
+        if (topWinner == null) {
+            winnerLine = msg("info-top-winner-none");
+        } else {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(topWinner.getKey());
+            String name = op.getName() == null ? "---" : op.getName();
+            String raw = plugin.getConfig().getString("messages.info-top-winner", "")
+                    .replace("%player%", name)
+                    .replace("%count%", String.valueOf(topWinner.getValue()));
+            winnerLine = HexUtil.colorize(raw);
+        }
+
+        String nextStart = koth.hasBothPositions() ? ScheduleUtil.getNextStart(koth) : "Sin zona marcada";
+        String nextLine = HexUtil.colorize(plugin.getConfig().getString("messages.info-next-start", "").replace("%next%", nextStart));
+
+        String header = plugin.getConfig().getString("messages.info-header", "")
+                .replace("%prefix%", plugin.getConfig().getString("plugin.prefix", ""))
+                .replace("%koth%", koth.getName());
+
+        String[] lines = {
+                HexUtil.colorize(header),
+                HexUtil.colorize(plugin.getConfig().getString("messages.info-state", "").replace("%state%", state)),
+                HexUtil.colorize(plugin.getConfig().getString("messages.info-mode", "").replace("%mode%", mode)),
+                winnerLine,
+                nextLine
         };
         sender.sendMessage(lines);
     }
@@ -300,9 +338,15 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             default: {
-                if (!(sender instanceof Player)) return true;
                 Koth koth = plugin.getKothManager().get(sub);
                 if (koth == null) { reply(sender, msg("koth-not-found")); return true; }
+
+                if (args.length >= 2 && args[1].equalsIgnoreCase("info")) {
+                    sendKothInfo(sender, koth);
+                    return true;
+                }
+
+                if (!(sender instanceof Player)) return true;
                 new KothMenu(plugin, koth).open((Player) sender);
                 return true;
             }
@@ -313,7 +357,9 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> base = Arrays.asList("help", "reload", "tops", "arsenal", "create", "start", "stop", "delete", "capturetime", "score", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
         if (args.length == 1) {
-            return base.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
+            List<String> opts = new ArrayList<>(base);
+            plugin.getKothManager().getAll().forEach(k -> opts.add(k.getName()));
+            return opts.stream().filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("rw")) {
             List<String> opts = new ArrayList<>();
@@ -324,6 +370,10 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 2 && Arrays.asList("start", "stop", "delete", "capturetime", "score", "arsenal", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
+        }
+        if (args.length == 2 && plugin.getKothManager().exists(args[0])) {
+            return Collections.singletonList("info").stream()
+                    .filter(s -> s.startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("rw") && args[1].equalsIgnoreCase("create")) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
@@ -347,4 +397,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-                             }
+            }
