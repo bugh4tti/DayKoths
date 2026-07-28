@@ -14,6 +14,7 @@ import com.bughatti.daykoths.manager.StatsManager;
 import com.bughatti.daykoths.placeholder.DayKothsExpansion;
 import com.bughatti.daykoths.tasks.ArsenalTask;
 import com.bughatti.daykoths.tasks.CaptureTask;
+import com.bughatti.daykoths.tasks.ScheduleTask;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DayKoths extends JavaPlugin {
@@ -49,6 +50,7 @@ public class DayKoths extends JavaPlugin {
 
         new CaptureTask(this).runTaskTimer(this, 20L, 20L);
         new ArsenalTask(this).runTaskTimer(this, 1200L, 1200L);
+        new ScheduleTask(this).runTaskTimer(this, 1200L, 1200L);
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new DayKothsExpansion(this).register();
@@ -73,4 +75,4 @@ public class DayKoths extends JavaPlugin {
     public ScoreboardManager getScoreboardManager() { return scoreboardManager; }
     public StatsManager getStatsManager() { return statsManager; }
     public ArsenalManager getArsenalManager() { return arsenalManager; }
-}
+                }
