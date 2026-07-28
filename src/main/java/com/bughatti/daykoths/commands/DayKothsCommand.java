@@ -1,9 +1,11 @@
 package com.bughatti.daykoths.commands;
 
 import com.bughatti.daykoths.DayKoths;
+import com.bughatti.daykoths.gui.ArsenalMenu;
 import com.bughatti.daykoths.gui.KothMenu;
 import com.bughatti.daykoths.gui.MainMenu;
 import com.bughatti.daykoths.gui.RewardMenu;
+import com.bughatti.daykoths.gui.TopsMenu;
 import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
@@ -55,6 +57,33 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+    private void sendHelp(CommandSender sender) {
+        String[] lines = {
+                HexUtil.colorize("&b&lDayKoths &8» &fVersion " + plugin.getDescription().getVersion() + " &7creado por &b" + plugin.getConfig().getString("plugin.author", "Bughatti")),
+                HexUtil.colorize("&7---------------------------------"),
+                HexUtil.colorize("&e/dk &7- Abre el menu principal"),
+                HexUtil.colorize("&e/dk <koth> &7- Abre el menu de ese koth"),
+                HexUtil.colorize("&e/dk create <koth> <puntaje|tiempo> <valor> &7- Crea un koth"),
+                HexUtil.colorize("&e/dk start|stop <koth> &7- Inicia o detiene un koth"),
+                HexUtil.colorize("&e/dk delete <koth> &7- Elimina un koth"),
+                HexUtil.colorize("&e/dk wand &7- Da la wand para marcar la zona"),
+                HexUtil.colorize("&e/dk setpos <koth> &7- Guarda la zona marcada"),
+                HexUtil.colorize("&e/dk capturetime <koth> <minutos> &7- Tiempo de captura"),
+                HexUtil.colorize("&e/dk duration <koth> <minutos> &7- Duracion total del koth"),
+                HexUtil.colorize("&e/dk score <koth> true|false &7- Modo puntaje on/off"),
+                HexUtil.colorize("&e/dk utilities <koth> true|false &7- Lana/telas on/off"),
+                HexUtil.colorize("&e/dk keepinventory <koth> true|false"),
+                HexUtil.colorize("&e/dk schedules <koth> <dia|alldays> <hora> true|false"),
+                HexUtil.colorize("&e/dk rw <koth> &7- Abre el menu de recompensa"),
+                HexUtil.colorize("&e/dk rw create <koth> <comando> &7- Agrega recompensa de comando"),
+                HexUtil.colorize("&e/dk arsenal <koth> &7- Menu de eventos aleatorios"),
+                HexUtil.colorize("&e/dk tops &7- Top 5 jugadores con mas koths ganados"),
+                HexUtil.colorize("&e/dk reload &7- Recarga la configuracion"),
+                HexUtil.colorize("&7---------------------------------"),
+        };
+        sender.sendMessage(lines);
+    }
+
     private boolean handle(CommandSender sender, String[] args) {
         if (args.length == 0) {
             if (sender instanceof Player) {
@@ -72,13 +101,27 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
         switch (sub) {
             case "help": {
-                reply(sender, HexUtil.colorize("&b&lDayKoths &8» &fVersion " + plugin.getDescription().getVersion() + " &7creado por &b" + plugin.getConfig().getString("plugin.author", "Bughatti")));
+                sendHelp(sender);
                 return true;
             }
             case "reload": {
                 plugin.reloadConfig();
                 plugin.getKothManager().load();
+                plugin.getStatsManager().load();
                 reply(sender, msg("reload-success"));
+                return true;
+            }
+            case "tops": {
+                if (!(sender instanceof Player)) return true;
+                new TopsMenu(plugin).open((Player) sender);
+                return true;
+            }
+            case "arsenal": {
+                if (args.length < 2) { reply(sender, msg("arsenal-usage")); return true; }
+                if (!(sender instanceof Player)) return true;
+                Koth koth = plugin.getKothManager().get(args[1]);
+                if (koth == null) { reply(sender, msg("koth-not-found")); return true; }
+                new ArsenalMenu(plugin, koth).open((Player) sender);
                 return true;
             }
             case "create": {
@@ -268,7 +311,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> base = Arrays.asList("help", "reload", "create", "start", "stop", "delete", "capturetime", "score", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
+        List<String> base = Arrays.asList("help", "reload", "tops", "arsenal", "create", "start", "stop", "delete", "capturetime", "score", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
         if (args.length == 1) {
             return base.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
@@ -278,7 +321,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
             plugin.getKothManager().getAll().forEach(k -> opts.add(k.getName()));
             return opts.stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
-        if (args.length == 2 && Arrays.asList("start", "stop", "delete", "capturetime", "score", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
+        if (args.length == 2 && Arrays.asList("start", "stop", "delete", "capturetime", "score", "arsenal", "setpos", "schedules", "utilities", "keepinventory", "duration").contains(args[0].toLowerCase())) {
             return plugin.getKothManager().getAll().stream().map(Koth::getName)
                     .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
@@ -304,4 +347,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-                                             }
+                             }
