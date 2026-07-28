@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 
+import java.util.Map;
+
 public class GuiListener implements Listener {
 
     private final DayKoths plugin;
@@ -30,6 +32,12 @@ public class GuiListener implements Listener {
     public void onClick(InventoryClickEvent e) {
         String title = e.getView().getTitle();
         MainMenu mainMenu = new MainMenu(plugin);
+        TopsMenu topsMenu = new TopsMenu(plugin);
+
+        if (title.equals(topsMenu.title())) {
+            e.setCancelled(true);
+            return;
+        }
 
         if (title.equals(mainMenu.title())) {
             e.setCancelled(true);
@@ -98,6 +106,7 @@ public class GuiListener implements Listener {
                 }
                 return;
             }
+
             RewardMenu rewardMenu = new RewardMenu(plugin, koth);
             if (title.equals(rewardMenu.title())) {
                 int slot = e.getRawSlot();
@@ -106,6 +115,30 @@ public class GuiListener implements Listener {
                     if (s == slot) { isRewardSlot = true; break; }
                 }
                 if (!isRewardSlot) e.setCancelled(true);
+                return;
+            }
+
+            ArsenalMenu arsenalMenu = new ArsenalMenu(plugin, koth);
+            if (title.equals(arsenalMenu.title())) {
+                e.setCancelled(true);
+                int slot = e.getRawSlot();
+                Player player = (Player) e.getWhoClicked();
+
+                if (slot == ArsenalMenu.TOGGLE_SLOT) {
+                    koth.setArsenalEnabled(!koth.isArsenalEnabled());
+                    plugin.getKothManager().save();
+                    new ArsenalMenu(plugin, koth).open(player);
+                    return;
+                }
+
+                Map<Integer, String> slotMap = ArsenalMenu.buildSlotMap(plugin);
+                String id = slotMap.get(slot);
+                if (id != null) {
+                    boolean current = plugin.getArsenalManager().isEnabledForKoth(koth, id);
+                    koth.getArsenalOverrides().put(id, !current);
+                    plugin.getKothManager().save();
+                    new ArsenalMenu(plugin, koth).open(player);
+                }
                 return;
             }
         }
