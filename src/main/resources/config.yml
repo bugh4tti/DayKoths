@@ -31,6 +31,7 @@ messages:
   score-set: "%prefix%&aModo puntaje del koth &e%koth% &aen &e%value%&a."
   delete-usage: "%prefix%&cUso: /daykoths delete <koth>"
   schedules-usage: "%prefix%&cUso: /daykoths schedules <koth> <dia|alldays> <hora> <true|false>"
+  arsenal-usage: "%prefix%&cUso: /daykoths arsenal <koth>"
   utilities-blocked: "%prefix%&cNo podés usar lana ni telas dentro de este koth."
   reload-success: "%prefix%&aConfiguracion recargada."
   create-usage: "%prefix%&cUso: /daykoths create <koth> <puntaje|tiempo> <valor>"
@@ -41,6 +42,7 @@ messages:
   rw-command-usage: "%prefix%&cUso: /daykoths rw create <koth> <comando>"
   rw-command-added: "%prefix%&aComando de recompensa agregado al koth &e%koth%&a."
   gui-create-hint: "%prefix%&bUsa &f/daykoths create <koth> <puntaje|tiempo> <valor> &bpara crear un koth."
+  golden-apple-cooldown: "%prefix%&cTenes que esperar &e%seconds%s &cpara comer otra manzana dorada."
 
 titles:
   enter-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
@@ -76,10 +78,53 @@ gui:
   main-title: "&8DayKoths &7» &fMenu Principal"
   koth-menu-title: "&8Koth &7» &b%koth%"
   reward-menu-title: "&8Recompensa &7» &6%koth%"
+  arsenal-menu-title: "&8Arsenal &7» &b%koth%"
+  tops-menu-title: "&8DayKoths &7» &fTop Jugadores"
   create-item-name: "&aCrear Koth"
   create-item-lore: "&7Click para ver como crear un koth"
+
+arsenal:
+  event-interval-minutes: 6
+  announce-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
+  events:
+    force-1:
+      name: "&a¡Fuerza I! (40s)"
+      type: GOOD
+      potion-effect: STRENGTH
+      amplifier: 0
+      duration-seconds: 40
+    speed-1:
+      name: "&a¡Velocidad I! (40s)"
+      type: GOOD
+      potion-effect: SPEED
+      amplifier: 0
+      duration-seconds: 40
+    regen-1:
+      name: "&a¡Regeneracion I! (20s)"
+      type: GOOD
+      potion-effect: REGENERATION
+      amplifier: 0
+      duration-seconds: 20
+    weakness-1:
+      name: "&c¡Debilidad I! (30s)"
+      type: BAD
+      potion-effect: WEAKNESS
+      amplifier: 0
+      duration-seconds: 30
+    slowness-1:
+      name: "&c¡Lentitud I! (30s)"
+      type: BAD
+      potion-effect: SLOW
+      amplifier: 0
+      duration-seconds: 30
+    golden-apple-cooldown:
+      name: "&cManzanas con Cooldown (10s)"
+      type: BAD
+      special: GOLDEN_APPLE_COOLDOWN
+      cooldown-seconds: 10
 
 schedule:
   timezone: "America/Argentina/Buenos_Aires"
 
 koths: {}
+stats: {}
