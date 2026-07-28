@@ -44,6 +44,12 @@ messages:
   rw-command-added: "%prefix%&aComando de recompensa agregado al koth &e%koth%&a."
   gui-create-hint: "%prefix%&bUsa &f/daykoths create <koth> <puntaje|tiempo> <valor> &bpara crear un koth."
   golden-apple-cooldown: "%prefix%&cTenes que esperar &e%seconds%s &cpara comer otra manzana dorada."
+  info-header: "%prefix%&fInformacion del Koth &b%koth%"
+  info-state: "&7Estado: %state%"
+  info-mode: "&7Modo: &f%mode%"
+  info-top-winner: "&7Jugador con mas victorias: &e%player% &7(&f%count% &7veces)"
+  info-top-winner-none: "&7Jugador con mas victorias: &8Nadie gano este koth todavia"
+  info-next-start: "&7Proximo horario: &f%next%"
 
 titles:
   enter-title: "&x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL&x&5&0&E&9&F&F&lP&x&6&4&E&D&F&F&lV&x&7&8&F&1&F&F&lP"
