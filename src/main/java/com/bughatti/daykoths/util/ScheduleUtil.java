@@ -28,6 +28,18 @@ public class ScheduleUtil {
         return "No programado";
     }
 
+    public static boolean isActiveNow(Koth koth) {
+        ZonedDateTime now = TimeUtil.nowArgentina();
+        int hour = now.getHour();
+        String dayKey = now.getDayOfWeek().name();
+        return isActive(koth, "ALLDAYS", hour) || isActive(koth, dayKey, hour);
+    }
+
+    public static String currentKey() {
+        ZonedDateTime now = TimeUtil.nowArgentina();
+        return now.getDayOfWeek().name() + "-" + now.getHour();
+    }
+
     private static boolean isActive(Koth koth, String dayKey, int hour) {
         Map<Integer, Boolean> hours = koth.getSchedules().get(dayKey);
         return hours != null && Boolean.TRUE.equals(hours.get(hour));
