@@ -1,5 +1,5 @@
 plugin:
-  prefix: "&#00DAFF&lD&#14DEFF&lA&#28E2FF&lY&#3CE6FF&lK&#50E9FF&lO&#64EDFF&lT&#78F1FF&lH&#78F1FGS &8● &f"
+  prefix: "&bKoth &8» &f"
   version: "1.0.0"
   author: "Bughatti"
 
@@ -31,6 +31,7 @@ messages:
   score-set: "%prefix%&aModo puntaje del koth &e%koth% &aen &e%value%&a."
   delete-usage: "%prefix%&cUso: /daykoths delete <koth>"
   schedules-usage: "%prefix%&cUso: /daykoths schedules <koth> <dia|alldays> <hora> <true|false>"
+  schedule-warning: "%prefix%&e¡El koth &6%koth% &ecomenzará en &6%minutes% &eminutos!"
   arsenal-usage: "%prefix%&cUso: /daykoths arsenal <koth>"
   utilities-blocked: "%prefix%&cNo podés usar lana ni telas dentro de este koth."
   reload-success: "%prefix%&aConfiguracion recargada."
@@ -65,6 +66,7 @@ bossbar:
 
 scoreboard:
   enabled: false
+  auto-disable-tab: true
   title: "&b&lDAYKOTHS"
   lines:
     - "&7Koth: &f%koth%"
@@ -125,6 +127,7 @@ arsenal:
 
 schedule:
   timezone: "America/Argentina/Buenos_Aires"
+  warning-minutes: 5
 
 koths: {}
 stats: {}
