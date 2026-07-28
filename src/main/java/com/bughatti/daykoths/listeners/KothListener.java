@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class KothListener implements Listener {
 
@@ -16,6 +17,11 @@ public class KothListener implements Listener {
 
     public KothListener(DayKoths plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        plugin.getTabIntegrationManager().onPlayerJoin(e.getPlayer());
     }
 
     @EventHandler
