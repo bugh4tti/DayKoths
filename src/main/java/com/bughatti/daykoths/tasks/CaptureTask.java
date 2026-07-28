@@ -118,6 +118,7 @@ public class CaptureTask extends BukkitRunnable {
         if (!anyRunning) {
             plugin.getScoreboardManager().clearAll();
         }
+        plugin.getTabIntegrationManager().onKothStateChanged(anyRunning);
     }
 
     private void finishByCapture(Koth koth, Player winner) {
@@ -169,4 +170,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-        }
+                                             }
