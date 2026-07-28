@@ -31,6 +31,7 @@ public class Koth {
     private transient String activeArsenalEvent = null;
     private transient long activeArsenalExpiry = 0;
     private transient long lastArsenalTriggerMinute = -1;
+    private transient String lastScheduleTriggerKey = null;
 
     public Koth(String name) {
         this.name = name;
@@ -106,4 +107,6 @@ public class Koth {
     public void setActiveArsenalExpiry(long activeArsenalExpiry) { this.activeArsenalExpiry = activeArsenalExpiry; }
     public long getLastArsenalTriggerMinute() { return lastArsenalTriggerMinute; }
     public void setLastArsenalTriggerMinute(long lastArsenalTriggerMinute) { this.lastArsenalTriggerMinute = lastArsenalTriggerMinute; }
+    public String getLastScheduleTriggerKey() { return lastScheduleTriggerKey; }
+    public void setLastScheduleTriggerKey(String lastScheduleTriggerKey) { this.lastScheduleTriggerKey = lastScheduleTriggerKey; }
     }
