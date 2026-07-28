@@ -11,6 +11,7 @@ import com.bughatti.daykoths.manager.KothManager;
 import com.bughatti.daykoths.manager.ScoreboardManager;
 import com.bughatti.daykoths.manager.SelectionManager;
 import com.bughatti.daykoths.manager.StatsManager;
+import com.bughatti.daykoths.manager.TabIntegrationManager;
 import com.bughatti.daykoths.placeholder.DayKothsExpansion;
 import com.bughatti.daykoths.tasks.ArsenalTask;
 import com.bughatti.daykoths.tasks.CaptureTask;
@@ -26,6 +27,7 @@ public class DayKoths extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private StatsManager statsManager;
     private ArsenalManager arsenalManager;
+    private TabIntegrationManager tabIntegrationManager;
 
     @Override
     public void onEnable() {
@@ -38,6 +40,7 @@ public class DayKoths extends JavaPlugin {
         scoreboardManager = new ScoreboardManager(this);
         statsManager = new StatsManager(this);
         arsenalManager = new ArsenalManager(this);
+        tabIntegrationManager = new TabIntegrationManager(this);
 
         DayKothsCommand command = new DayKothsCommand(this);
         getCommand("daykoths").setExecutor(command);
@@ -75,4 +78,5 @@ public class DayKoths extends JavaPlugin {
     public ScoreboardManager getScoreboardManager() { return scoreboardManager; }
     public StatsManager getStatsManager() { return statsManager; }
     public ArsenalManager getArsenalManager() { return arsenalManager; }
-                }
+    public TabIntegrationManager getTabIntegrationManager() { return tabIntegrationManager; }
+        }
