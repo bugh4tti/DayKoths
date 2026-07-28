@@ -130,7 +130,7 @@ public class CaptureTask extends BukkitRunnable {
                 .replace("%koth%", koth.getName()));
         Bukkit.broadcastMessage(msg);
         TitleUtil.sendWinTitle(plugin, winner, koth);
-        plugin.getStatsManager().addWin(winner.getUniqueId());
+        plugin.getStatsManager().addWin(winner.getUniqueId(), koth.getName());
         giveReward(koth, winner);
         plugin.getKothManager().save();
     }
@@ -150,7 +150,7 @@ public class CaptureTask extends BukkitRunnable {
                         .replace("%koth%", koth.getName()));
                 Bukkit.broadcastMessage(msg);
                 TitleUtil.sendWinTitle(plugin, winner, koth);
-                plugin.getStatsManager().addWin(winner.getUniqueId());
+                plugin.getStatsManager().addWin(winner.getUniqueId(), koth.getName());
                 giveReward(koth, winner);
             }
         } else {
@@ -170,4 +170,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-                                             }
+                                }
