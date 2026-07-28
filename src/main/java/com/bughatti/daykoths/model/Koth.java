@@ -16,8 +16,10 @@ public class Koth {
     private boolean running = false;
     private boolean keepInventory = false;
     private boolean utilitiesAllowed = true;
+    private boolean arsenalEnabled = false;
     private List<ItemStack> reward = new ArrayList<>();
     private List<String> commandRewards = new ArrayList<>();
+    private Map<String, Boolean> arsenalOverrides = new HashMap<>();
 
     private final Map<String, Map<Integer, Boolean>> schedules = new HashMap<>();
 
@@ -26,6 +28,9 @@ public class Koth {
     private transient UUID currentCapturer = null;
     private transient int currentCaptureSeconds = 0;
     private transient long startedAt = 0;
+    private transient String activeArsenalEvent = null;
+    private transient long activeArsenalExpiry = 0;
+    private transient long lastArsenalTriggerMinute = -1;
 
     public Koth(String name) {
         this.name = name;
@@ -51,16 +56,23 @@ public class Koth {
             this.scoreProgress.clear();
             this.currentCapturer = null;
             this.currentCaptureSeconds = 0;
+            this.activeArsenalEvent = null;
+            this.activeArsenalExpiry = 0;
+            this.lastArsenalTriggerMinute = -1;
         }
     }
     public boolean isKeepInventory() { return keepInventory; }
     public void setKeepInventory(boolean keepInventory) { this.keepInventory = keepInventory; }
     public boolean isUtilitiesAllowed() { return utilitiesAllowed; }
     public void setUtilitiesAllowed(boolean utilitiesAllowed) { this.utilitiesAllowed = utilitiesAllowed; }
+    public boolean isArsenalEnabled() { return arsenalEnabled; }
+    public void setArsenalEnabled(boolean arsenalEnabled) { this.arsenalEnabled = arsenalEnabled; }
     public List<ItemStack> getReward() { return reward; }
     public void setReward(List<ItemStack> reward) { this.reward = reward; }
     public List<String> getCommandRewards() { return commandRewards; }
     public void setCommandRewards(List<String> commandRewards) { this.commandRewards = commandRewards; }
+    public Map<String, Boolean> getArsenalOverrides() { return arsenalOverrides; }
+    public void setArsenalOverrides(Map<String, Boolean> arsenalOverrides) { this.arsenalOverrides = arsenalOverrides; }
     public Map<String, Map<Integer, Boolean>> getSchedules() { return schedules; }
 
     public boolean hasBothPositions() { return pos1 != null && pos2 != null; }
@@ -88,4 +100,10 @@ public class Koth {
     public int getCurrentCaptureSeconds() { return currentCaptureSeconds; }
     public void setCurrentCaptureSeconds(int currentCaptureSeconds) { this.currentCaptureSeconds = currentCaptureSeconds; }
     public long getStartedAt() { return startedAt; }
+    public String getActiveArsenalEvent() { return activeArsenalEvent; }
+    public void setActiveArsenalEvent(String activeArsenalEvent) { this.activeArsenalEvent = activeArsenalEvent; }
+    public long getActiveArsenalExpiry() { return activeArsenalExpiry; }
+    public void setActiveArsenalExpiry(long activeArsenalExpiry) { this.activeArsenalExpiry = activeArsenalExpiry; }
+    public long getLastArsenalTriggerMinute() { return lastArsenalTriggerMinute; }
+    public void setLastArsenalTriggerMinute(long lastArsenalTriggerMinute) { this.lastArsenalTriggerMinute = lastArsenalTriggerMinute; }
     }
