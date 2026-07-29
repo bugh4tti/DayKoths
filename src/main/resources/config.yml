@@ -13,6 +13,7 @@ messages:
   koth-started: "%prefix%&a¡El koth &e%koth% &aha comenzado!"
   koth-stopped: "%prefix%&c¡El koth &e%koth% &cha finalizado!"
   koth-won: "%prefix%&a¡&e%player% &aha ganado el koth &e%koth%&a!"
+  koth-top3: "%prefix%&72do lugar: &f%second_player% &7(&e%second_amount%&7) &8| &73er lugar: &f%third_player% &7(&e%third_amount%&7)"
   koth-no-zone: "%prefix%&cEse koth no tiene zona marcada. Usa /daykoths wand y /daykoths setpos primero."
   wand-given: "%prefix%&aRecibiste la wand de selección. Click izquierdo = zona 1, click derecho = zona 2."
   wand-pos1: "%prefix%&aPosicion 1 marcada. Usa /daykoths setpos <koth> para guardarla."
@@ -88,6 +89,7 @@ gui:
   reward-menu-title: "&8Recompensa &7» &6%koth%"
   arsenal-menu-title: "&8Arsenal &7» &b%koth%"
   tops-menu-title: "&8DayKoths &7» &fTop Jugadores"
+  streak-menu-title: "&8DayKoths &7» &dRachas"
   create-item-name: "&aCrear Koth"
   create-item-lore: "&7Click para ver como crear un koth"
 
@@ -131,9 +133,25 @@ arsenal:
       special: GOLDEN_APPLE_COOLDOWN
       cooldown-seconds: 10
 
+streak:
+  enabled: true
+  min-streak-announce: 2
+  broadcast: "%prefix%&d¡&e%player% &dlleva &e%streak% &dkoths seguidos ganados! 🔥"
+  rewards:
+    2:
+      commands:
+        - "crates key give %player% comun 2"
+    3:
+      commands:
+        - "crates key give %player% comun 3"
+    5:
+      commands:
+        - "crates key give %player% raro 1"
+
 schedule:
   timezone: "America/Argentina/Buenos_Aires"
   warning-minutes: 5
 
 koths: {}
 stats: {}
+streak-state: {}
