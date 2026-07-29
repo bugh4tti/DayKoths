@@ -5,6 +5,7 @@ import com.bughatti.daykoths.gui.ArsenalMenu;
 import com.bughatti.daykoths.gui.KothMenu;
 import com.bughatti.daykoths.gui.MainMenu;
 import com.bughatti.daykoths.gui.RewardMenu;
+import com.bughatti.daykoths.gui.StreakMenu;
 import com.bughatti.daykoths.gui.TopsMenu;
 import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
@@ -81,6 +82,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 HexUtil.colorize("&e/dk rw <koth> &7- Abre el menu de recompensa"),
                 HexUtil.colorize("&e/dk rw create <koth> <comando> &7- Agrega recompensa de comando"),
                 HexUtil.colorize("&e/dk arsenal <koth> &7- Menu de eventos aleatorios"),
+                HexUtil.colorize("&e/dk streak &7- Recompensas por rachas de victorias"),
                 HexUtil.colorize("&e/dk tops &7- Top 5 jugadores con mas koths ganados"),
                 HexUtil.colorize("&e/dk reload &7- Recarga la configuracion"),
                 HexUtil.colorize("&7---------------------------------"),
@@ -152,6 +154,11 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
             case "tops": {
                 if (!(sender instanceof Player)) return true;
                 new TopsMenu(plugin).open((Player) sender);
+                return true;
+            }
+            case "streak": {
+                if (!(sender instanceof Player)) return true;
+                new StreakMenu(plugin).open((Player) sender);
                 return true;
             }
             case "arsenal": {
@@ -355,7 +362,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> base = Arrays.asList("help", "reload", "tops", "arsenal", "create", "start", "stop", "delete", "capturetime", "score", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
+        List<String> base = Arrays.asList("help", "reload", "tops", "streak", "arsenal", "create", "start", "stop", "delete", "capturetime", "score", "wand", "setpos", "schedules", "utilities", "keepinventory", "duration", "rw");
         if (args.length == 1) {
             List<String> opts = new ArrayList<>(base);
             plugin.getKothManager().getAll().forEach(k -> opts.add(k.getName()));
@@ -397,4 +404,4 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-            }
+                    }
