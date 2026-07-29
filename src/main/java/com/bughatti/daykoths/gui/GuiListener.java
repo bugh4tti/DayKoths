@@ -33,8 +33,9 @@ public class GuiListener implements Listener {
         String title = e.getView().getTitle();
         MainMenu mainMenu = new MainMenu(plugin);
         TopsMenu topsMenu = new TopsMenu(plugin);
+        StreakMenu streakMenu = new StreakMenu(plugin);
 
-        if (title.equals(topsMenu.title())) {
+        if (title.equals(topsMenu.title()) || title.equals(streakMenu.title())) {
             e.setCancelled(true);
             return;
         }
@@ -155,4 +156,4 @@ public class GuiListener implements Listener {
             }
         }
     }
-                        }
+                                 }
