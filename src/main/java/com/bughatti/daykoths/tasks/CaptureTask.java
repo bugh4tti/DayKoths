@@ -7,12 +7,16 @@ import com.bughatti.daykoths.util.HexUtil;
 import com.bughatti.daykoths.util.TimeUtil;
 import com.bughatti.daykoths.util.TitleUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CaptureTask extends BukkitRunnable {
 
@@ -131,6 +135,7 @@ public class CaptureTask extends BukkitRunnable {
         Bukkit.broadcastMessage(msg);
         TitleUtil.sendWinTitle(plugin, winner, koth);
         plugin.getStatsManager().addWin(winner.getUniqueId(), koth.getName());
+        plugin.getStreakManager().recordWin(winner.getUniqueId());
         giveReward(koth, winner);
         plugin.getKothManager().save();
     }
@@ -139,10 +144,12 @@ public class CaptureTask extends BukkitRunnable {
         koth.setRunning(false);
         plugin.getBossBarManager().remove(koth);
         if (koth.getMode() == CaptureMode.SCORE && !koth.getScoreProgress().isEmpty()) {
-            UUID winnerId = koth.getScoreProgress().entrySet().stream()
-                    .max((a, b) -> a.getValue() - b.getValue())
-                    .map(java.util.Map.Entry::getKey).orElse(null);
-            Player winner = winnerId != null ? Bukkit.getPlayer(winnerId) : null;
+            List<Map.Entry<UUID, Integer>> sorted = koth.getScoreProgress().entrySet().stream()
+                    .sorted((a, b) -> b.getValue() - a.getValue())
+                    .collect(Collectors.toList());
+
+            UUID winnerId = sorted.get(0).getKey();
+            Player winner = Bukkit.getPlayer(winnerId);
             if (winner != null) {
                 String msg = HexUtil.colorize(plugin.getConfig().getString("messages.koth-won", "")
                         .replace("%prefix%", plugin.getConfig().getString("plugin.prefix", ""))
@@ -151,7 +158,12 @@ public class CaptureTask extends BukkitRunnable {
                 Bukkit.broadcastMessage(msg);
                 TitleUtil.sendWinTitle(plugin, winner, koth);
                 plugin.getStatsManager().addWin(winner.getUniqueId(), koth.getName());
+                plugin.getStreakManager().recordWin(winner.getUniqueId());
                 giveReward(koth, winner);
+
+                if (sorted.size() >= 2) {
+                    announceTop3(sorted);
+                }
             }
         } else {
             Bukkit.broadcastMessage(HexUtil.colorize(plugin.getConfig().getString("messages.koth-stopped", "")
@@ -159,6 +171,28 @@ public class CaptureTask extends BukkitRunnable {
                     .replace("%koth%", koth.getName())));
         }
         plugin.getKothManager().save();
+    }
+
+    private void announceTop3(List<Map.Entry<UUID, Integer>> sorted) {
+        Map.Entry<UUID, Integer> second = sorted.get(1);
+        String secondName = nameOf(second.getKey());
+        String thirdName = sorted.size() >= 3 ? nameOf(sorted.get(2).getKey()) : "---";
+        String thirdAmount = sorted.size() >= 3 ? String.valueOf(sorted.get(2).getValue()) : "0";
+
+        String raw = plugin.getConfig().getString("messages.koth-top3", "")
+                .replace("%prefix%", plugin.getConfig().getString("plugin.prefix", ""))
+                .replace("%second_player%", secondName)
+                .replace("%second_amount%", String.valueOf(second.getValue()))
+                .replace("%third_player%", thirdName)
+                .replace("%third_amount%", thirdAmount);
+        Bukkit.broadcastMessage(HexUtil.colorize(raw));
+    }
+
+    private String nameOf(UUID id) {
+        Player p = Bukkit.getPlayer(id);
+        if (p != null) return p.getName();
+        OfflinePlayer op = Bukkit.getOfflinePlayer(id);
+        return op.getName() == null ? "---" : op.getName();
     }
 
     private void giveReward(Koth koth, Player winner) {
@@ -170,4 +204,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-                                }
+            }
