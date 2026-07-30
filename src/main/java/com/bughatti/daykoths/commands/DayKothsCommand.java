@@ -68,14 +68,15 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 HexUtil.colorize("&e/dk &7- Abre el menu principal"),
                 HexUtil.colorize("&e/dk <koth> &7- Abre el menu de ese koth"),
                 HexUtil.colorize("&e/dk <koth> info &7- Info rapida del koth en el chat"),
-                HexUtil.colorize("&e/dk create <koth> <puntaje|tiempo> <valor> &7- Crea un koth"),
+                HexUtil.colorize("&e/dk create <koth> capturetime <segundos> &7- Koth por captura continua"),
+                HexUtil.colorize("&e/dk create <koth> score <minutos> &7- Koth por puntaje, dura X minutos"),
                 HexUtil.colorize("&e/dk start|stop <koth> &7- Inicia o detiene un koth"),
                 HexUtil.colorize("&e/dk delete <koth> &7- Elimina un koth"),
                 HexUtil.colorize("&e/dk wand &7- Da la wand para marcar la zona"),
                 HexUtil.colorize("&e/dk setpos <koth> &7- Guarda la zona marcada"),
-                HexUtil.colorize("&e/dk capturetime <koth> <minutos> &7- Tiempo de captura"),
+                HexUtil.colorize("&e/dk capturetime <koth> <minutos> &7- Ajusta el tiempo de captura"),
                 HexUtil.colorize("&e/dk duration <koth> <minutos> &7- Duracion total del koth"),
-                HexUtil.colorize("&e/dk score <koth> true|false &7- Modo puntaje on/off"),
+                HexUtil.colorize("&e/dk score <koth> true|false &7- Cambia el modo del koth"),
                 HexUtil.colorize("&e/dk utilities <koth> true|false &7- Lana/telas on/off"),
                 HexUtil.colorize("&e/dk keepinventory <koth> true|false"),
                 HexUtil.colorize("&e/dk schedules <koth> <dia|alldays> <hora> true|false"),
@@ -92,7 +93,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
 
     private void sendKothInfo(CommandSender sender, Koth koth) {
         String state = koth.isRunning() ? "&aActivo" : "&cInactivo";
-        String mode = koth.getMode().name().equals("SCORE") ? "Puntaje" : "Tiempo";
+        String mode = koth.getMode().name().equals("SCORE") ? "Puntaje" : "Tiempo de captura";
 
         Map.Entry<UUID, Integer> topWinner = plugin.getStatsManager().topWinnerForKoth(koth.getName());
         String winnerLine;
@@ -177,7 +178,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 String name = args[1];
                 String modeArg = args[2].toLowerCase();
 
-                if (!modeArg.equals("puntaje") && !modeArg.equals("tiempo")) {
+                if (!modeArg.equals("capturetime") && !modeArg.equals("score")) {
                     reply(sender, msg("create-mode-invalid"));
                     return true;
                 }
@@ -191,8 +192,13 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                 }
 
                 Koth koth = plugin.getKothManager().create(name);
-                koth.setMode(modeArg.equals("tiempo") ? CaptureMode.TIME : CaptureMode.SCORE);
-                koth.setRequiredSeconds(value);
+                if (modeArg.equals("capturetime")) {
+                    koth.setMode(CaptureMode.TIME);
+                    koth.setRequiredSeconds(value);
+                } else {
+                    koth.setMode(CaptureMode.SCORE);
+                    koth.setDurationMinutes(value);
+                }
                 plugin.getKothManager().save();
                 reply(sender, msg("koth-created").replace("%koth%", name));
                 return true;
@@ -387,7 +393,7 @@ public class DayKothsCommand implements CommandExecutor, TabCompleter {
                     .filter(n -> n.toLowerCase().startsWith(args[2].toLowerCase())).collect(Collectors.toList());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
-            return Arrays.asList("puntaje", "tiempo");
+            return Arrays.asList("capturetime", "score");
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("schedules")) {
             return Arrays.asList("alldays", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday");
