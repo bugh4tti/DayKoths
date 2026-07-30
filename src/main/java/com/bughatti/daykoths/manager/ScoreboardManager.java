@@ -1,9 +1,11 @@
 package com.bughatti.daykoths.manager;
 
 import com.bughatti.daykoths.DayKoths;
+import com.bughatti.daykoths.model.CaptureMode;
 import com.bughatti.daykoths.model.Koth;
 import com.bughatti.daykoths.util.HexUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -30,22 +32,41 @@ public class ScoreboardManager {
         return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text);
     }
 
+    private String applyNativePlaceholders(String text, Koth koth, String timeLeft) {
+        String capturerName = "---";
+        if (koth.getCurrentCapturer() != null) {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(koth.getCurrentCapturer());
+            capturerName = op.getName() == null ? "---" : op.getName();
+        }
+        int remaining = Math.max(0, koth.getRequiredSeconds() - koth.getCurrentCaptureSeconds());
+
+        return text.replace("%koth%", koth.getName())
+                .replace("%time_left%", timeLeft)
+                .replace("%capturer%", capturerName)
+                .replace("%capture_seconds%", String.valueOf(koth.getCurrentCaptureSeconds()))
+                .replace("%capture_required%", String.valueOf(koth.getRequiredSeconds()))
+                .replace("%capture_remaining%", String.valueOf(remaining));
+    }
+
     public void update(Koth koth, String timeLeft) {
         if (!plugin.getConfig().getBoolean("scoreboard.enabled", false)) {
             clearAll();
             return;
         }
 
-        List<String> rawLines = plugin.getConfig().getStringList("scoreboard.lines");
+        String section = koth.getMode() == CaptureMode.SCORE ? "scoreboard.score" : "scoreboard.capturetime";
+        String defaultTitle = koth.getMode() == CaptureMode.SCORE ? "&b&lDAYKOTHS &7- Puntaje" : "&b&lDAYKOTHS &7- Tiempo";
+
+        String rawTitleConfig = plugin.getConfig().getString(section + ".title", defaultTitle);
+        List<String> rawLines = plugin.getConfig().getStringList(section + ".lines");
 
         List<Map.Entry<UUID, Integer>> top = koth.getScoreProgress().entrySet().stream()
                 .sorted((a, b) -> b.getValue() - a.getValue())
                 .collect(Collectors.toList());
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            String title = applyPapi(player, plugin.getConfig().getString("scoreboard.title", "&b&lDAYKOTHS"))
-                    .replace("%koth%", koth.getName())
-                    .replace("%time_left%", timeLeft);
+            String title = applyNativePlaceholders(rawTitleConfig, koth, timeLeft);
+            title = applyPapi(player, title);
 
             Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
             Objective obj = board.registerNewObjective("daykoths", "dummy", HexUtil.colorize(title));
@@ -53,7 +74,8 @@ public class ScoreboardManager {
 
             int score = rawLines.size();
             for (String line : rawLines) {
-                String parsed = line.replace("%koth%", koth.getName()).replace("%time_left%", timeLeft);
+                String parsed = applyNativePlaceholders(line, koth, timeLeft);
+
                 for (int i = 1; i <= 3; i++) {
                     String name = "---";
                     String amount = "0";
@@ -66,6 +88,7 @@ public class ScoreboardManager {
                     parsed = parsed.replace("%top_player_" + i + "_name%", name);
                     parsed = parsed.replace("%top_player_" + i + "_amount%", amount);
                 }
+
                 parsed = applyPapi(player, parsed);
                 String colored = HexUtil.colorize(parsed);
                 if (colored.length() > 40) colored = colored.substring(0, 40);
@@ -91,4 +114,4 @@ public class ScoreboardManager {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
-                        }
+            }
