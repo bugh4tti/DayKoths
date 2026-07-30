@@ -1,6 +1,6 @@
 plugin:
-  prefix: "&bKoth &8» &f"
-  version: "1.0.0"
+  prefix: "&#00DAFF&lD&#14DEFF&lA&#28E2FF&lY&#3CE6FF&lK&#50E9FF&lO&#64EDFF&lT&#78F1FF&lH&#78F1FF&lS"
+  version: "1.6.0"
   author: "Bughatti"
 
 messages:
@@ -36,14 +36,14 @@ messages:
   arsenal-usage: "%prefix%&cUso: /daykoths arsenal <koth>"
   utilities-blocked: "%prefix%&cNo podés usar lana ni telas dentro de este koth."
   reload-success: "%prefix%&aConfiguracion recargada."
-  create-usage: "%prefix%&cUso: /daykoths create <koth> <puntaje|tiempo> <valor>"
-  create-mode-invalid: "%prefix%&cEl modo debe ser &epuntaje &co&etiempo&c."
-  create-value-invalid: "%prefix%&cEl valor tiene que ser un numero (segundos)."
+  create-usage: "%prefix%&cUso: /daykoths create <koth> <capturetime|score> <valor>"
+  create-mode-invalid: "%prefix%&cEl modo debe ser &ecapturetime &co&escore&c."
+  create-value-invalid: "%prefix%&cEl valor tiene que ser un numero."
   schedule-updated: "%prefix%&aSchedule actualizado: &e%day% %hour%h &a-> &e%value%"
   schedule-hour-invalid: "%prefix%&cHora invalida."
   rw-command-usage: "%prefix%&cUso: /daykoths rw create <koth> <comando>"
   rw-command-added: "%prefix%&aComando de recompensa agregado al koth &e%koth%&a."
-  gui-create-hint: "%prefix%&bUsa &f/daykoths create <koth> <puntaje|tiempo> <valor> &bpara crear un koth."
+  gui-create-hint: "%prefix%&bUsa &f/daykoths create <koth> <capturetime|score> <valor> &bpara crear un koth."
   golden-apple-cooldown: "%prefix%&cTenes que esperar &e%seconds%s &cpara comer otra manzana dorada."
   info-header: "%prefix%&fInformacion del Koth &b%koth%"
   info-state: "&7Estado: %state%"
@@ -74,14 +74,24 @@ bossbar:
 scoreboard:
   enabled: false
   auto-disable-tab: true
-  title: "&b&lDAYKOTHS"
-  lines:
-    - "&7Koth: &f%koth%"
-    - "&7Tiempo: &f%time_left%"
-    - " "
-    - "&e1. &f%top_player_1_name% &7- &f%top_player_1_amount%"
-    - "&72. &f%top_player_2_name% &7- &f%top_player_2_amount%"
-    - "&c3. &f%top_player_3_name% &7- &f%top_player_3_amount%"
+  capturetime:
+    title: "&b&lDAYKOTHS &7- Tiempo"
+    lines:
+      - "&7Koth: &f%koth%"
+      - "&7Tiempo restante: &f%time_left%"
+      - " "
+      - "&7Capturando: &f%capturer%"
+      - "&7Progreso: &f%capture_seconds%s / %capture_required%s"
+      - "&7Falta: &f%capture_remaining%s"
+  score:
+    title: "&b&lDAYKOTHS &7- Puntaje"
+    lines:
+      - "&7Koth: &f%koth%"
+      - "&7Tiempo restante: &f%time_left%"
+      - " "
+      - "&e1. &f%top_player_1_name% &7- &f%top_player_1_amount%"
+      - "&72. &f%top_player_2_name% &7- &f%top_player_2_amount%"
+      - "&c3. &f%top_player_3_name% &7- &f%top_player_3_amount%"
 
 gui:
   main-title: "&8DayKoths &7» &fMenu Principal"
