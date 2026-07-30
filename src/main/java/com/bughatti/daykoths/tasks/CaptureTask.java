@@ -74,6 +74,7 @@ public class CaptureTask extends BukkitRunnable {
                 continue;
             }
 
+            // Paso 1: quien esta fisicamente dentro (esto maneja los titulos de entrar/salir)
             Set<UUID> currentlyInside = new HashSet<>();
 
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -81,42 +82,48 @@ public class CaptureTask extends BukkitRunnable {
 
                 if (inside) {
                     currentlyInside.add(player.getUniqueId());
-
                     if (!koth.getPlayersInside().contains(player.getUniqueId())) {
                         player.sendTitle(enterTitle, enterSubtitle, fadeIn, stay, fadeOut);
                     }
+                } else if (koth.getPlayersInside().contains(player.getUniqueId())) {
+                    player.sendTitle(leaveTitle, leaveSubtitle, fadeIn, stay, fadeOut);
+                }
+            }
 
+            koth.getPlayersInside().clear();
+            koth.getPlayersInside().addAll(currentlyInside);
+
+            // Paso 2: solo captura si hay EXACTAMENTE 1 jugador adentro; si hay 2+, esta disputado y no captura nadie
+            UUID solePlayerId = currentlyInside.size() == 1 ? currentlyInside.iterator().next() : null;
+
+            if (solePlayerId != null) {
+                Player capturer = Bukkit.getPlayer(solePlayerId);
+                if (capturer != null) {
                     if (tickCounter % interval == 0) {
                         String finalMsg = HexUtil.colorize(capturingMsgRaw
                                 .replace("%prefix%", prefix)
-                                .replace("%player%", player.getName())
+                                .replace("%player%", capturer.getName())
                                 .replace("%koth%", koth.getName())
                                 .replace("%time_left%", timeLeftStr));
                         Bukkit.broadcastMessage(finalMsg);
                     }
 
                     if (koth.getMode() == CaptureMode.SCORE) {
-                        koth.getScoreProgress().merge(player.getUniqueId(), 1, Integer::sum);
+                        koth.getScoreProgress().merge(solePlayerId, 1, Integer::sum);
                     } else {
-                        if (koth.getCurrentCapturer() == null || koth.getCurrentCapturer().equals(player.getUniqueId())) {
-                            koth.setCurrentCapturer(player.getUniqueId());
-                            koth.setCurrentCaptureSeconds(koth.getCurrentCaptureSeconds() + 1);
-                            if (koth.getCurrentCaptureSeconds() >= koth.getRequiredSeconds()) {
-                                finishByCapture(koth, player);
-                            }
+                        koth.setCurrentCapturer(solePlayerId);
+                        koth.setCurrentCaptureSeconds(koth.getCurrentCaptureSeconds() + 1);
+                        if (koth.getCurrentCaptureSeconds() >= koth.getRequiredSeconds()) {
+                            finishByCapture(koth, capturer);
+                            continue;
                         }
                     }
-                } else if (koth.getPlayersInside().contains(player.getUniqueId())) {
-                    player.sendTitle(leaveTitle, leaveSubtitle, fadeIn, stay, fadeOut);
-                    if (koth.getMode() == CaptureMode.TIME && player.getUniqueId().equals(koth.getCurrentCapturer())) {
-                        koth.setCurrentCapturer(null);
-                        koth.setCurrentCaptureSeconds(0);
-                    }
                 }
+            } else if (koth.getMode() == CaptureMode.TIME) {
+                // disputado (2+) o vacio (0): se pierde el progreso de captura por tiempo
+                koth.setCurrentCapturer(null);
+                koth.setCurrentCaptureSeconds(0);
             }
-
-            koth.getPlayersInside().clear();
-            koth.getPlayersInside().addAll(currentlyInside);
         }
 
         if (!anyRunning) {
