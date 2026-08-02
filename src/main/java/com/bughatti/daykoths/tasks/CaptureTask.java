@@ -74,28 +74,28 @@ public class CaptureTask extends BukkitRunnable {
                 continue;
             }
 
-            // Paso 1: quien esta fisicamente dentro (titulos de entrar/salir para todos)
+            // Paso 1: quien esta fisicamente dentro (solo para saber presencia, sin mandar titulos aca)
             Set<UUID> currentlyInside = new HashSet<>();
             for (Player player : Bukkit.getOnlinePlayers()) {
-                boolean inside = koth.isInside(player.getLocation());
-                if (inside) {
+                if (koth.isInside(player.getLocation())) {
                     currentlyInside.add(player.getUniqueId());
-                    if (!koth.getPlayersInside().contains(player.getUniqueId())) {
-                        player.sendTitle(enterTitle, enterSubtitle, fadeIn, stay, fadeOut);
-                    }
-                } else if (koth.getPlayersInside().contains(player.getUniqueId())) {
-                    player.sendTitle(leaveTitle, leaveSubtitle, fadeIn, stay, fadeOut);
                 }
             }
             koth.getPlayersInside().clear();
             koth.getPlayersInside().addAll(currentlyInside);
 
-            // Paso 2: el que ya estaba capturando sigue capturando aunque entren mas jugadores.
-            // Solo se resetea/cambia cuando ESE capturador especifico ya no esta adentro.
+            // Paso 2: el que ya estaba capturando sigue capturando mientras siga adentro.
+            // Los titulos de "capturando"/"dejaste de capturar" van SOLO al capturador real.
             UUID previousCapturer = koth.getCurrentCapturer();
             boolean previousStillInside = previousCapturer != null && currentlyInside.contains(previousCapturer);
 
             if (!previousStillInside) {
+                if (previousCapturer != null) {
+                    Player leftPlayer = Bukkit.getPlayer(previousCapturer);
+                    if (leftPlayer != null) {
+                        leftPlayer.sendTitle(leaveTitle, leaveSubtitle, fadeIn, stay, fadeOut);
+                    }
+                }
                 koth.setCurrentCaptureSeconds(0);
                 koth.setCurrentCapturer(null);
                 previousCapturer = null;
@@ -105,6 +105,10 @@ public class CaptureTask extends BukkitRunnable {
             if (capturer == null && !currentlyInside.isEmpty()) {
                 capturer = currentlyInside.iterator().next();
                 koth.setCurrentCapturer(capturer);
+                Player newCapturer = Bukkit.getPlayer(capturer);
+                if (newCapturer != null) {
+                    newCapturer.sendTitle(enterTitle, enterSubtitle, fadeIn, stay, fadeOut);
+                }
             }
 
             if (capturer != null) {
@@ -216,4 +220,4 @@ public class CaptureTask extends BukkitRunnable {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd);
         }
     }
-            }
+                        }
